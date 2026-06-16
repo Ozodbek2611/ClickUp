@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.online.clickup.entity.CheckList;
 import uz.pdp.online.clickup.model.ApiResponse;
 import uz.pdp.online.clickup.model.checkListDto.CheckListRequestDto;
 import uz.pdp.online.clickup.model.checkListDto.CheckListResponseDto;
@@ -29,7 +28,7 @@ public class CheckListController {
 
     @PatchMapping("/{checkListId}")
     public ResponseEntity<ApiResponse<CheckListResponseDto>> edit(@PathVariable UUID checkListId,
-                                                       @RequestParam String name) {
+                                                                  @RequestParam String name) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.ok(checkListService.edit(checkListId, name),

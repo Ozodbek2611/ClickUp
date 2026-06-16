@@ -1,16 +1,17 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -18,36 +19,37 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class Task extends AbsUUIDEntity {
+
     private String name;
 
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "priority_id")
     private Priority priority;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_task_id")
     private Task parentTask;
 
-    @CreatedDate
-    private LocalDateTime startedDate;
+    @CreationTimestamp
+    private Timestamp startedDate;
 
-    private LocalDateTime startTimeHas;
+    private Timestamp startTimeHas;
 
-    private LocalDateTime dueDate;
+    private Timestamp dueDate;
 
-    private LocalDateTime dueTimeHas;
+    private Timestamp dueTimeHas;
 
     private Long estimateTime;
 
-    private LocalDateTime activatedDate;
+    private Timestamp activatedDate;
 }

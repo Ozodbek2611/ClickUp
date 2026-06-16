@@ -47,7 +47,7 @@ public class AttachmentService {
                     ? originalFilename.substring(originalFilename.lastIndexOf("."))
                     : "";
 
-            String savedName = UUID.randomUUID().toString() + extension;
+            String savedName = UUID.randomUUID() + extension;
 
             Path filePath = Paths.get(uploadDir, savedName);
             Files.copy(file.getInputStream(), filePath);

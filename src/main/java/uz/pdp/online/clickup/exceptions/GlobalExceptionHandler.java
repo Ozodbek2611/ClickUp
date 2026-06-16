@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception ex) {
         return ResponseEntity
@@ -65,6 +66,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleDisabledException(DisabledException ex) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error("Email not verified. Please verify your email first.", null));
+                .body(ApiResponse.error("Email not verified. Please verify your email first.", List.of(ex.getMessage())));
     }
 }

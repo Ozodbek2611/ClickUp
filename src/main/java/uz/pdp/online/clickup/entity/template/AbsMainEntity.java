@@ -23,11 +23,12 @@ public abstract class AbsMainEntity {
     private Timestamp updatedAt;
 
     @CreatedBy
-    @JoinColumn(updatable = false)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_id", updatable = false)
     private User createdBy;
 
     @LastModifiedBy
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updated_by_id")
     private User updatedBy;
 }

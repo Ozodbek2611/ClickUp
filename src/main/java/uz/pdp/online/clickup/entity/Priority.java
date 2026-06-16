@@ -1,12 +1,10 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 
 @EqualsAndHashCode(callSuper = true)
@@ -14,11 +12,12 @@ import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Priority extends AbsUUIDEntity {
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "icon_id")
     private Icon icon;
 }

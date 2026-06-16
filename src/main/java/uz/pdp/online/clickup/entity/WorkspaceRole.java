@@ -13,7 +13,9 @@ import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"workspace_id", "name"})})
 public class WorkspaceRole extends AbsUUIDEntity {
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;

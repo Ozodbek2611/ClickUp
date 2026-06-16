@@ -2,7 +2,6 @@ spring:
   application:
     name: ClickUp
   jpa:
-    database: PostgreSQL
     show-sql: true
     hibernate:
       ddl-auto: create
@@ -11,17 +10,20 @@ spring:
     password: 719
     url: jdbc:postgresql://localhost:5432/clickup_db
     username: postgres
-    driver-class-name: org.postgresql.Driver
   mail:
-    host: smtp.gmail.com
+    host: smtp.yandex.ru
     port: 587
-    username: contentmaker2611@gmail.com
-    password: "ozodbek74780399"
+    username: "ozodbek719@yandex.ru"
+    password: "wqwzusffesnfumap"
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-
+      mail.smtp.starttls.required: true
 jwt:
   secret: "pWcRlY1LSo3WJswuiytWClLNOmk9pon1CvtvaiI7-Oc"
-  expiration: 86400000      # 1 kun (ms)
-  refresh-expiration: 604800000  # 7 kun
+  expiration: 86400000
+logging:
+  file:
+    name: logs/click-up.log
+  level:
+    root: info

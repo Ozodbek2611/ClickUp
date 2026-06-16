@@ -1,4 +1,4 @@
-package uz.pdp.online.clickup.model;
+package uz.pdp.online.clickup.model.workspaceDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,11 +14,18 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberDto {
+
     private UUID userId;
+
     private String fullName;
+
     private String email;
+
     private String roleName;
+
     private Timestamp lastActive;
+
     private UUID roleId;
+
     private TypeOfAction typeOfAction;
 }

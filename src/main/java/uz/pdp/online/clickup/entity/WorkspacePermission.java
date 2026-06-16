@@ -14,6 +14,7 @@ import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 @NoArgsConstructor
 @Data
 public class WorkspacePermission extends AbsUUIDEntity {
+
     @ManyToOne(fetch = FetchType.LAZY,  optional = false)
     @JoinColumn(name = "workspace_role_id")
     private WorkspaceRole workspaceRole;

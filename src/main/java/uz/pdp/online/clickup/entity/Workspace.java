@@ -14,6 +14,7 @@ import uz.pdp.online.clickup.entity.template.AbsLongEntity;
 @Data
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "owner_id"})})
 public class Workspace extends AbsLongEntity {
+
     @Column(nullable = false)
     private String name;
 

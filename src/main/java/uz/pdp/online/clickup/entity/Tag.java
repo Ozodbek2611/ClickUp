@@ -1,6 +1,7 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -15,11 +16,12 @@ import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 @NoArgsConstructor
 @Data
 public class Tag extends AbsUUIDEntity {
+
     private String name;
 
     private String color;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 }

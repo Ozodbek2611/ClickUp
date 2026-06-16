@@ -1,10 +1,7 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 
 @EqualsAndHashCode(callSuper = true)
@@ -12,7 +9,9 @@ import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class Attachment extends AbsUUIDEntity {
+
     private String name;
 
     private String originalName;

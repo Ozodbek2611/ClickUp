@@ -14,13 +14,14 @@ import uz.pdp.online.clickup.entity.enums.TaskPermission;
 @NoArgsConstructor
 @Data
 public class CategoryUser extends AbsUUIDEntity {
+
     private String name;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

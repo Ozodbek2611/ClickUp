@@ -1,216 +1,61 @@
-//package uz.pdp.online.clickup.service;
-//
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//import uz.pdp.online.clickup.entity.*;
-//import uz.pdp.online.clickup.entity.enums.WorkspacePermissionName;
-//import uz.pdp.online.clickup.entity.enums.WorkspaceRoleName;
-//import uz.pdp.online.clickup.exceptions.AlreadyExistsException;
-//import uz.pdp.online.clickup.exceptions.ForbiddenException;
-//import uz.pdp.online.clickup.exceptions.NotFoundException;
-//import uz.pdp.online.clickup.model.MemberDto;
-//import uz.pdp.online.clickup.model.WorkspaceRequestDto;
-//import uz.pdp.online.clickup.model.WorkspaceResponseDto;
-//import uz.pdp.online.clickup.repository.*;
-//
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class WorkspaceService {
-//    private final WorkspaceRepository workspaceRepository;
-//    private final AttachmentRepository attachmentRepository;
-//    private final WorkspaceUserRepository workspaceUserRepository;
-//    private final WorkspaceRoleRepository workspaceRoleRepository;
-//    private final WorkspacePermissionRepository workspacePermissionRepository;
-//    private final UserRepository userRepository;
-//
-//    @Transactional
-//    public WorkspaceResponseDto create(WorkspaceRequestDto workspaceDto, User user) {
-//        if (workspaceRepository.existsByOwnerIdAndName(user.getId(), workspaceDto.getName())) {
-//            throw new AlreadyExistsException("Workspace already exists: " + workspaceDto.getName());
-//        }
-//
-//        Attachment attachment = null;
-//        if (workspaceDto.getAvatarId() != null) {
-//            attachment = attachmentRepository.findById(workspaceDto.getAvatarId())
-//                    .orElseThrow(() -> new NotFoundException("Avatar not found"));
-//        }
-//
-//        Workspace workspace = new Workspace(
-//                workspaceDto.getName(),
-//                workspaceDto.getColor(),
-//                user,
-//                attachment
-//        );
-//        Workspace saved = workspaceRepository.save(workspace);
-//
-//        WorkspaceRole ownerRole = workspaceRoleRepository.save(new WorkspaceRole(
-//                workspace,
-//                WorkspaceRoleName.ROLE_OWNER.name(),
-//                null
-//        ));
-//
-//        WorkspaceRole adminRole = workspaceRoleRepository.save(new WorkspaceRole(
-//                workspace,
-//                WorkspaceRoleName.ROLE_ADMIN.name(),
-//                null
-//        ));
-//
-//        WorkspaceRole memberRole = workspaceRoleRepository.save(new WorkspaceRole(
-//                workspace,
-//                WorkspaceRoleName.ROLE_MEMBER.name(),
-//                null
-//        ));
-//
-//        WorkspaceRole guestRole = workspaceRoleRepository.save(new WorkspaceRole(
-//                workspace,
-//                WorkspaceRoleName.ROLE_GUEST.name(),
-//                null
-//        ));
-//
-//
-//        List<WorkspacePermission> permissions = Arrays.stream(WorkspacePermissionName.values())
-//                .flatMap(permissionName -> {
-//                    List<WorkspacePermission> list = new ArrayList<>();
-//                    list.add(new WorkspacePermission(ownerRole, permissionName));
-//
-//                    if (permissionName.getRoles().contains(WorkspaceRoleName.ROLE_ADMIN)) {
-//                        list.add(new WorkspacePermission(adminRole, permissionName));
-//                    }
-//                    if (permissionName.getRoles().contains(WorkspaceRoleName.ROLE_MEMBER)) {
-//                        list.add(new WorkspacePermission(memberRole, permissionName));
-//                    }
-//                    if (permissionName.getRoles().contains(WorkspaceRoleName.ROLE_GUEST)) {
-//                        list.add(new WorkspacePermission(guestRole, permissionName));
-//                    }
-//                    return list.stream();
-//                })
-//                .toList();
-//
-//        workspacePermissionRepository.saveAll(permissions);
-//
-//        workspaceUserRepository.save(new WorkspaceUser(workspace, user, ownerRole));
-//
-//        return WorkspaceResponseDto.builder()
-//                .id(saved.getId())
-//                .name(saved.getName())
-//                .color(saved.getColor())
-//                .initialLetter(saved.getInitialLetter())
-//                .ownerId(saved.getOwner().getId())
-//                .avatarId(saved.getAvatar() != null ? saved.getAvatar().getId() : null)
-//                .createdById(saved.getCreatedBy() != null ? saved.getCreatedBy().getId() : null)
-//                .createdAt(saved.getCreatedAt())
-//                .updatedAt(saved.getUpdatedAt())
-//                .build();
-//    }
-//
-//    public void delete(Long id, User user) {
-//        Workspace workspace = workspaceRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Workspace not found with id: " + id));
-//
-//        if (!workspace.getOwner().getId().equals(user.getId())) {
-//            throw new ForbiddenException("You are not allowed to delete this workspace");
-//        }
-//
-//        workspaceRepository.delete(workspace);
-//    }
-//
-//    @Transactional
-//    public void addOrEditOrRemove(Long workspaceId, MemberDto memberDto) {
-//        Workspace workspace = workspaceRepository.findById(workspaceId)
-//                .orElseThrow(() -> new NotFoundException("Workspace not found: " + workspaceId));
-//
-//        User user = userRepository.findById(memberDto.getId())
-//                .orElseThrow(() -> new NotFoundException("User not found: " + memberDto.getId()));
-//
-//        switch (memberDto.getTypeOfAction()) {
-//            case ADD -> {
-//                WorkspaceRole role = workspaceRoleRepository.findById(memberDto.getRoleId())
-//                        .orElseThrow(() -> new NotFoundException("Role not found: " + memberDto.getRoleId()));
-//
-//                if (workspaceUserRepository.findByWorkspaceIdAndUserId(workspaceId, memberDto.getId()).isPresent()) {
-//                    throw new AlreadyExistsException("User already exists in workspace");
-//                }
-//
-//                workspaceUserRepository.save(new WorkspaceUser(workspace, user, role));
-//            }
-//            case EDIT -> {
-//                WorkspaceUser workspaceUser = workspaceUserRepository
-//                        .findByWorkspaceIdAndUserId(workspaceId, memberDto.getId())
-//                        .orElseThrow(() -> new NotFoundException("User not in workspace"));
-//
-//                WorkspaceRole role = workspaceRoleRepository.findById(memberDto.getRoleId())
-//                        .orElseThrow(() -> new NotFoundException("Role not found: " + memberDto.getRoleId()));
-//
-//                workspaceUser.setWorkspaceRole(role);
-//                workspaceUserRepository.save(workspaceUser);
-//            }
-//            case REMOVE -> workspaceUserRepository.deleteByWorkspaceIdAndUserId(workspaceId, memberDto.getId());
-//
-//        }
-//    }
-//}
-
 package uz.pdp.online.clickup.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.online.clickup.entity.*;
+import uz.pdp.online.clickup.entity.enums.TypeOfAction;
 import uz.pdp.online.clickup.entity.enums.WorkspacePermissionName;
 import uz.pdp.online.clickup.entity.enums.WorkspaceRoleName;
 import uz.pdp.online.clickup.exceptions.AlreadyExistsException;
 import uz.pdp.online.clickup.exceptions.ForbiddenException;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
-import uz.pdp.online.clickup.model.MemberDto;
-import uz.pdp.online.clickup.model.WorkspaceRequestDto;
-import uz.pdp.online.clickup.model.WorkspaceResponseDto;
+import uz.pdp.online.clickup.mapper.WorkspaceMapper;
+import uz.pdp.online.clickup.model.authDto.VerifyRequest;
+import uz.pdp.online.clickup.model.workspaceDto.*;
 import uz.pdp.online.clickup.repository.*;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class WorkspaceService {
+
     private final WorkspaceRepository workspaceRepository;
     private final AttachmentRepository attachmentRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
     private final WorkspaceRoleRepository workspaceRoleRepository;
     private final WorkspacePermissionRepository workspacePermissionRepository;
     private final UserRepository userRepository;
-    private final AuthService authService;
+    private final JavaMailSender javaMailSender;
+    private final WorkspaceMapper workspaceMapper;
+
+    @Value("${spring.mail.username}")
+    private String email;
 
     @Transactional
-    public WorkspaceResponseDto create(WorkspaceRequestDto dto, User user) {
-        if (workspaceRepository.existsByOwnerIdAndName(user.getId(), dto.getName())) {
-            throw new AlreadyExistsException("Workspace already exists: " + dto.getName());
+    public WorkspaceCreateResponseDto create(WorkspaceCreateRequestDto workspaceCreateRequestDto, User user) {
+        log.debug("Workspace creation request started. Name: {}, User Email: {}", workspaceCreateRequestDto.getName(), user.getEmail());
+
+        if (workspaceRepository.existsByOwnerIdAndName(user.getId(), workspaceCreateRequestDto.getName())) {
+            throw new AlreadyExistsException("Workspace already exists with name: " + workspaceCreateRequestDto.getName());
         }
 
-        Attachment attachment = null;
-        if (dto.getAvatarId() != null) {
-            attachment = attachmentRepository.findById(dto.getAvatarId())
-                    .orElseThrow(() -> new NotFoundException("Avatar not found"));
-        }
+        Attachment attachment = getAvatar(workspaceCreateRequestDto.getAvatarId());
 
         Workspace workspace = workspaceRepository.save(
-                new Workspace(dto.getName(), dto.getColor(), user, attachment));
+                new Workspace(workspaceCreateRequestDto.getName(), workspaceCreateRequestDto.getColor(), user, attachment));
 
-        WorkspaceRole ownerRole = workspaceRoleRepository.save(
-                new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_OWNER.name(), null));
-        WorkspaceRole adminRole = workspaceRoleRepository.save(
-                new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_ADMIN.name(), null));
-        WorkspaceRole memberRole = workspaceRoleRepository.save(
-                new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_MEMBER.name(), null));
-        WorkspaceRole guestRole = workspaceRoleRepository.save(
-                new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_GUEST.name(), null));
+        WorkspaceRole ownerRole = workspaceRoleRepository.save(new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_OWNER.name(), null));
+        WorkspaceRole adminRole = workspaceRoleRepository.save(new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_ADMIN.name(), null));
+        WorkspaceRole memberRole = workspaceRoleRepository.save(new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_MEMBER.name(), null));
+        WorkspaceRole guestRole = workspaceRoleRepository.save(new WorkspaceRole(workspace, WorkspaceRoleName.ROLE_GUEST.name(), null));
 
         List<WorkspacePermission> permissions = Arrays.stream(WorkspacePermissionName.values())
                 .flatMap(permissionName -> {
@@ -229,123 +74,214 @@ public class WorkspaceService {
         workspacePermissionRepository.saveAll(permissions);
         workspaceUserRepository.save(new WorkspaceUser(workspace, user, ownerRole));
 
-        return toDto(workspace);
+        log.info("Successfully created new Workspace. ID: {}, Name: {}", workspace.getId(), workspace.getName());
+        return workspaceMapper.toCreateResponse(workspace);
     }
 
     @Transactional
-    public WorkspaceResponseDto edit(Long id, WorkspaceRequestDto dto, User user) {
+    public WorkspaceEditResponseDto edit(Long id, WorkspaceEditRequestDto workspaceEditRequestDto, User user) {
+        log.debug("Workspace edit request started for ID: {}", id);
+
         Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Workspace not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Workspace not found with ID: " + id));
 
         if (!workspace.getOwner().getId().equals(user.getId())) {
             throw new ForbiddenException("You are not allowed to edit this workspace");
         }
 
-        Attachment attachment = null;
-        if (dto.getAvatarId() != null) {
-            attachment = attachmentRepository.findById(dto.getAvatarId())
-                    .orElseThrow(() -> new NotFoundException("Avatar not found"));
-        }
+        Attachment attachment = getAvatar(workspaceEditRequestDto.getAvatarId());
 
-        workspace.setName(dto.getName());
-        workspace.setColor(dto.getColor());
+        workspace.setName(workspaceEditRequestDto.getName());
+        workspace.setColor(workspaceEditRequestDto.getColor());
         workspace.setAvatar(attachment);
 
-        return toDto(workspaceRepository.save(workspace));
+        Workspace updated = workspaceRepository.save(workspace);
+        log.info("Successfully updated Workspace. ID: {}", updated.getId());
+
+        return workspaceMapper.toEditResponse(updated);
     }
 
     @Transactional
     public void changeOwner(Long id, UUID newOwnerId, User user) {
+        log.debug("Change owner request started for Workspace ID: {}", id);
+
         Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Workspace not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Workspace not found with ID: " + id));
 
         if (!workspace.getOwner().getId().equals(user.getId())) {
-            throw new ForbiddenException("Only owner can change owner");
+            throw new ForbiddenException("Only the workspace owner can change ownership");
         }
 
         User newOwner = userRepository.findById(newOwnerId)
-                .orElseThrow(() -> new NotFoundException("User not found: " + newOwnerId));
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + newOwnerId));
 
         workspace.setOwner(newOwner);
         workspaceRepository.save(workspace);
+        log.info("Workspace ownership changed successfully. Workspace ID: {}, New Owner ID: {}", id, newOwnerId);
     }
 
     @Transactional
     public void delete(Long id, User user) {
+        log.debug("Workspace deletion request started for ID: {}", id);
+
         Workspace workspace = workspaceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Workspace not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Workspace not found with ID: " + id));
 
         if (!workspace.getOwner().getId().equals(user.getId())) {
             throw new ForbiddenException("You are not allowed to delete this workspace");
         }
 
+        List<WorkspaceRole> roles = workspaceRoleRepository.findByWorkspaceId(id);
+        workspacePermissionRepository.deleteAllByWorkspaceRoleIn(roles);
+        workspaceUserRepository.deleteAllByWorkspaceId(id);
+        workspaceRoleRepository.deleteAllByWorkspaceId(id);
+
         workspaceRepository.delete(workspace);
+        log.info("Workspace deleted successfully. ID: {}", id);
     }
 
     @Transactional
     public void addOrEditOrRemove(Long workspaceId, MemberDto memberDto) {
+        log.debug("Member management request started. Workspace ID: {}, Action: {}", workspaceId, memberDto.getTypeOfAction());
+
         Workspace workspace = workspaceRepository.findById(workspaceId)
-                .orElseThrow(() -> new NotFoundException("Workspace not found: " + workspaceId));
+                .orElseThrow(() -> new NotFoundException("Workspace not found with ID: " + workspaceId));
 
         User user = userRepository.findById(memberDto.getUserId())
-                .orElseThrow(() -> new NotFoundException("User not found: " + memberDto.getUserId()));
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + memberDto.getUserId()));
 
         switch (memberDto.getTypeOfAction()) {
             case ADD -> {
                 if (workspaceUserRepository.findByWorkspaceIdAndUserId(workspaceId, memberDto.getUserId()).isPresent()) {
-                    throw new AlreadyExistsException("User already exists in workspace");
+                    throw new AlreadyExistsException("User already exists in this workspace");
                 }
 
                 WorkspaceRole role = workspaceRoleRepository.findById(memberDto.getRoleId())
-                        .orElseThrow(() -> new NotFoundException("Role not found: " + memberDto.getRoleId()));
+                        .orElseThrow(() -> new NotFoundException("Role not found with ID: " + memberDto.getRoleId()));
 
                 workspaceUserRepository.save(new WorkspaceUser(workspace, user, role));
 
-                String inviteLink = "http://localhost:8080/api/workspace/" + workspaceId + "/join";
-                boolean emailSent = authService.sendEmail(
-                        user.getEmail(),
-                        "You have been invited. Click to join: " + inviteLink
-                );
-                if (!emailSent) {
+                try {
+                    String inviteLink = "http://localhost:8080/api/workspace/" + workspaceId + "/join";
+                    sendEmail(user.getEmail(), "You have been invited to join the workspace. Click here to join: " + inviteLink);
+                } catch (Exception e) {
+                    log.error("Failed to send invitation email to {}", user.getEmail(), e);
                     throw new RuntimeException("Failed to send invitation email");
                 }
+                log.info("Member added successfully. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
             }
             case EDIT -> {
-                WorkspaceUser workspaceUser = workspaceUserRepository
-                        .findByWorkspaceIdAndUserId(workspaceId, memberDto.getUserId())
-                        .orElseThrow(() -> new NotFoundException("User not in workspace"));
+                WorkspaceUser workspaceUser = workspaceUserRepository.findByWorkspaceIdAndUserId(workspaceId, memberDto.getUserId())
+                        .orElseThrow(() -> new NotFoundException("User is not a member of this workspace"));
 
                 WorkspaceRole role = workspaceRoleRepository.findById(memberDto.getRoleId())
-                        .orElseThrow(() -> new NotFoundException("Role not found: " + memberDto.getRoleId()));
+                        .orElseThrow(() -> new NotFoundException("Role not found with ID: " + memberDto.getRoleId()));
 
                 workspaceUser.setWorkspaceRole(role);
                 workspaceUserRepository.save(workspaceUser);
+                log.info("Member role updated successfully. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
             }
-            case REMOVE -> workspaceUserRepository.deleteByWorkspaceIdAndUserId(workspaceId, memberDto.getUserId());
+            case REMOVE -> {
+                workspaceUserRepository.deleteByWorkspaceIdAndUserId(workspaceId, memberDto.getUserId());
+                log.info("Member removed successfully from workspace. Workspace ID: {}, User ID: {}", workspaceId, memberDto.getUserId());
+            }
         }
     }
 
     @Transactional
-    public void joinToWorkspace(Long workspaceId, User user) {
-        WorkspaceUser workspaceUser = workspaceUserRepository
-                .findByWorkspaceIdAndUserId(workspaceId, user.getId())
-                .orElseThrow(() -> new NotFoundException("Invitation not found"));
+    public void joinToWorkspace(Long workspaceId, User user, VerifyRequest verifyRequest) {
+        log.debug("Join workspace request started. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
 
-        workspaceUser.setDateJoined(new Timestamp(System.currentTimeMillis()));
-        workspaceUserRepository.save(workspaceUser);
+        WorkspaceUser workspaceUser = workspaceUserRepository.findByWorkspaceIdAndUserId(workspaceId, user.getId())
+                .orElseThrow(() -> new NotFoundException("Invitation not found for this user"));
+
+        if (!user.getEmail().equalsIgnoreCase(verifyRequest.getEmail())) {
+            throw new ForbiddenException("Email verification failed. Emails do not match");
+        }
+
+        String emailCode = userRepository.findEmailCodeById(user.getId())
+                .orElseThrow(() -> new NotFoundException("Email verification code not found"));
+
+        if (emailCode.equals(verifyRequest.getEmailCode())) {
+            workspaceUserRepository.save(workspaceUser);
+            log.info("User successfully joined the workspace. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
+        } else {
+            throw new ForbiddenException("Invalid email verification code");
+        }
     }
 
-    private WorkspaceResponseDto toDto(Workspace workspace) {
-        return WorkspaceResponseDto.builder()
-                .id(workspace.getId())
-                .name(workspace.getName())
-                .color(workspace.getColor())
-                .initialLetter(workspace.getInitialLetter())
-                .ownerId(workspace.getOwner().getId())
-                .avatarId(workspace.getAvatar() != null ? workspace.getAvatar().getId() : null)
-                .createdById(workspace.getCreatedBy() != null ? workspace.getCreatedBy().getId() : null)
-                .createdAt(workspace.getCreatedAt())
-                .updatedAt(workspace.getUpdatedAt())
+    @Transactional(readOnly = true)
+    public List<MemberDto> getMemberAndGuest(Long id) {
+        log.debug("Fetching members and guests for Workspace ID: {}", id);
+        return workspaceUserRepository.findAllByWorkspaceId(id).stream()
+                .map(this::toMemberDto)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<WorkspaceGetAllResponseDto> getMyWorkspaces(User user) {
+        log.debug("Fetching all workspaces for User ID: {}", user.getId());
+        return workspaceUserRepository.findAllByUserId(user.getId()).stream()
+                .map(WorkspaceUser::getWorkspace)
+                .map(workspaceMapper::toGetAllResponse)
+                .toList();
+    }
+
+    @Transactional
+    public void addOrRemovePermissionToRole(WorkspaceRoleDto workspaceRoleDto) {
+        log.debug("Permission role modification started. Role ID: {}, Action: {}", workspaceRoleDto.getId(), workspaceRoleDto.getTypeOfAction());
+
+        WorkspaceRole workspaceRole = workspaceRoleRepository.findById(workspaceRoleDto.getId())
+                .orElseThrow(() -> new NotFoundException("Workspace role not found with ID: " + workspaceRoleDto.getId()));
+
+        Optional<WorkspacePermission> permission = workspacePermissionRepository
+                .findByWorkspaceRoleIdAndPermission(workspaceRoleDto.getId(), workspaceRoleDto.getWorkspacePermissionName());
+
+        if (workspaceRoleDto.getTypeOfAction().equals(TypeOfAction.ADD)) {
+            if (permission.isPresent()) {
+                throw new AlreadyExistsException("Permission is already assigned to this role");
+            }
+            workspacePermissionRepository.save(new WorkspacePermission(workspaceRole, workspaceRoleDto.getWorkspacePermissionName()));
+            log.info("Permission assigned successfully. Role ID: {}, Permission: {}", workspaceRoleDto.getId(), workspaceRoleDto.getWorkspacePermissionName());
+        } else if (workspaceRoleDto.getTypeOfAction().equals(TypeOfAction.REMOVE)) {
+            if (permission.isEmpty()) {
+                throw new NotFoundException("Permission not found for this role");
+            }
+            workspacePermissionRepository.delete(permission.get());
+            log.info("Permission removed successfully. Role ID: {}, Permission: {}", workspaceRoleDto.getId(), workspaceRoleDto.getWorkspacePermissionName());
+        }
+    }
+
+    private Attachment getAvatar(UUID avatarId) {
+        if (avatarId != null) {
+            return attachmentRepository.findById(avatarId)
+                    .orElseThrow(() -> new NotFoundException("Avatar not found with ID: " + avatarId));
+        }
+        return null;
+    }
+
+    @Async
+    void sendEmail(String sendingEmail, String text) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setFrom(email);
+            mailMessage.setTo(sendingEmail);
+            mailMessage.setSubject("Workspace Invitation");
+            mailMessage.setText(text);
+            javaMailSender.send(mailMessage);
+        } catch (Exception e) {
+            log.error("An error occurred while sending email to {}", sendingEmail, e);
+        }
+    }
+
+    private MemberDto toMemberDto(WorkspaceUser workspaceUser) {
+        User user = workspaceUser.getUser();
+        return MemberDto.builder()
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .roleName(workspaceUser.getWorkspaceRole().getName())
+                .lastActive(user.getLastActive())
                 .build();
     }
 }

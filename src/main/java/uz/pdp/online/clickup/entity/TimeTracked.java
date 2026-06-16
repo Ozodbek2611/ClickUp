@@ -1,27 +1,27 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class TimeTracked extends AbsUUIDEntity {
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
 
-    private LocalDateTime startedAt;
+    private Timestamp startedAt;
 
-    private LocalDateTime stoppedAt;
+    private Timestamp stoppedAt;
 }

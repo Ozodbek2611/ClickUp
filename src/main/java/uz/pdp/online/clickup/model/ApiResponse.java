@@ -8,9 +8,13 @@ import java.util.List;
 @Getter
 @Builder
 public class ApiResponse<T> {
+
     private boolean success;
+
     private String message;
+
     private T data;
+
     private List<String> errors;
 
     public static <T> ApiResponse<T> ok(T data, String message) {

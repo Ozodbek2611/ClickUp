@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Data
 public class WorkspaceUser extends AbsUUIDEntity {
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
@@ -41,12 +42,5 @@ public class WorkspaceUser extends AbsUUIDEntity {
         this.workspace = workspace;
         this.user = user;
         this.workspaceRole = workspaceRole;
-    }
-
-    public WorkspaceUser(Workspace workspace, User user, WorkspaceRole workspaceRole, Timestamp dateJoined) {
-        this.workspace = workspace;
-        this.user = user;
-        this.workspaceRole = workspaceRole;
-        this.dateJoined = dateJoined;
     }
 }

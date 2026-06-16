@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import uz.pdp.online.clickup.entity.enums.SystemRoleName;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import java.util.List;
 @Data
 @Builder
 public class User extends AbsUUIDEntity implements UserDetails {
+
     private String fullName;
 
     @Column(unique = true, nullable = false)
@@ -37,6 +39,14 @@ public class User extends AbsUUIDEntity implements UserDetails {
     private SystemRoleName systemRole;
 
     private String emailCode;
+
+    @PrePersist
+    @PreUpdate
+    public void setInitialLetter() {
+        this.initialLetter = fullName.substring(0, 1).toUpperCase();
+    }
+
+    private Timestamp lastActive;
 
     private boolean enabled;
 

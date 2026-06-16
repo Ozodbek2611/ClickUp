@@ -20,9 +20,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService customUserDetailsService;
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

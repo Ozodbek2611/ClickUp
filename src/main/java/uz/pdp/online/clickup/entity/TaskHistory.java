@@ -1,6 +1,7 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -17,15 +18,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class TaskHistory extends AbsUUIDEntity {
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
 
     private String changeFieldName;
 
-    private LocalDateTime before;
+    private Timestamp before;
 
-    private LocalDateTime after;
+    private Timestamp after;
 
     private Integer data;
 }

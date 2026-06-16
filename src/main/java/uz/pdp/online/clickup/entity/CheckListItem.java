@@ -1,6 +1,7 @@
 package uz.pdp.online.clickup.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -15,13 +16,14 @@ import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
 @NoArgsConstructor
 @Data
 public class CheckListItem extends AbsUUIDEntity {
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "check_list_id")
     private CheckList checkList;
 
-    private String resolved;
+    private Boolean resolved;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_user_id")
     private User assignedUser;
 }

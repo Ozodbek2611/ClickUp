@@ -11,6 +11,4 @@ import java.util.UUID;
 public interface StatusRepository extends JpaRepository<Status, UUID> {
 
     List<Status> findAllBySpaceId(UUID spaceId);
-
-    List<Status> findAllByCategoryId(UUID categoryId);
 }

@@ -11,7 +11,6 @@ import uz.pdp.online.clickup.mapper.UserMapper;
 import uz.pdp.online.clickup.model.userDto.UserResponseDto;
 import uz.pdp.online.clickup.model.userDto.UserUpdateDto;
 import uz.pdp.online.clickup.repository.AttachmentRepository;
-import uz.pdp.online.clickup.repository.UserRepository;
 
 import java.util.UUID;
 

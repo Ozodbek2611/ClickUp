@@ -1,73 +1,11 @@
-//package uz.pdp.online.clickup.service;
-//
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.authentication.BadCredentialsException;
-//import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Service;
-//import uz.pdp.online.clickup.entity.User;
-//import uz.pdp.online.clickup.exceptions.AlreadyExistsException;
-//import uz.pdp.online.clickup.model.authDto.AuthResponse;
-//import uz.pdp.online.clickup.model.authDto.LoginRequest;
-//import uz.pdp.online.clickup.model.authDto.RegisterRequest;
-//import uz.pdp.online.clickup.repository.UserRepository;
-//import uz.pdp.online.clickup.security.JwtProvider;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class AuthService {
-//    private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
-//    private final JwtProvider jwtProvider;
-//    private final AuthenticationManager authenticationManager;
-//
-//    public AuthResponse register(RegisterRequest registerRequest) {
-//        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-//            throw new AlreadyExistsException("Email already exists");
-//        }
-//
-//        User user = User.builder()
-//                .fullName(registerRequest.getFullName())
-//                .email(registerRequest.getEmail())
-//                .password(passwordEncoder.encode(registerRequest.getPassword()))
-//                .enabled(true)
-//                .accountNonExpired(true)
-//                .accountNonLocked(true)
-//                .credentialsNonExpired(true)
-//                .build();
-//
-//        userRepository.save(user);
-//        String token = jwtProvider.generateToken(user);
-//
-//        return new AuthResponse(token);
-//    }
-//
-//    public AuthResponse login(LoginRequest loginRequest) {
-//        try {
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(
-//                            loginRequest.getEmail(),
-//                            loginRequest.getPassword()
-//                    )
-//            );
-//        } catch (BadCredentialsException e) {
-//            throw new RuntimeException("Incorrect email or password");
-//        }
-//
-//        User user = userRepository.findByEmail(loginRequest.getEmail())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        String token = jwtProvider.generateToken(user);
-//
-//        return new AuthResponse(token);
-//    }
-//}
 package uz.pdp.online.clickup.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -80,24 +18,31 @@ import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.model.authDto.AuthResponse;
 import uz.pdp.online.clickup.model.authDto.LoginRequest;
 import uz.pdp.online.clickup.model.authDto.RegisterRequest;
+import uz.pdp.online.clickup.model.authDto.VerifyRequest;
 import uz.pdp.online.clickup.repository.UserRepository;
 import uz.pdp.online.clickup.security.JwtProvider;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
     private final JavaMailSender javaMailSender;
 
+    @Value("${spring.mail.username}")
+    private String email;
+
     public AuthResponse register(RegisterRequest registerRequest) {
+        log.debug("Registration request started for email: {}", registerRequest.getEmail());
+
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new AlreadyExistsException("Email already exists");
+            throw new AlreadyExistsException("Email already exists: " + registerRequest.getEmail());
         }
 
-        // Random 6 xonali kod
         String emailCode = String.valueOf((int) (Math.random() * 900000) + 100000);
 
         User user = User.builder()
@@ -115,11 +60,15 @@ public class AuthService {
 
         sendEmail(user.getEmail(), "Your verification code: " + emailCode);
 
+        log.info("User registered successfully. ID: {}, Email: {}", user.getId(), user.getEmail());
+
         String token = jwtProvider.generateToken(user);
         return new AuthResponse(token);
     }
 
     public AuthResponse login(LoginRequest loginRequest) {
+        log.debug("Authentication request started for email: {}", loginRequest.getEmail());
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -128,39 +77,53 @@ public class AuthService {
                     )
             );
         } catch (BadCredentialsException e) {
+            log.warn("Authentication failed for email: {} - Bad credentials", loginRequest.getEmail());
             throw new ForbiddenException("Incorrect email or password");
         }
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> {
+                    log.warn("User record not found during login. Email: {}", loginRequest.getEmail());
+                    return new NotFoundException("User not found with email: " + loginRequest.getEmail());
+                });
+
+        log.info("User authenticated successfully. Email: {}", user.getEmail());
 
         String token = jwtProvider.generateToken(user);
         return new AuthResponse(token);
     }
 
-    public void verifyEmail(String email, String emailCode) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found: " + email));
+    public void verifyEmail(VerifyRequest verifyRequest) {
+        log.debug("Email verification request started for email: {}", verifyRequest.getEmail());
 
-        if (!emailCode.equals(user.getEmailCode())) {
-            throw new ForbiddenException("Email code is incorrect");
+        User user = userRepository.findByEmail(verifyRequest.getEmail())
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + verifyRequest.getEmail()));
+
+        if (!verifyRequest.getEmailCode().equals(user.getEmailCode())) {
+            log.warn("Incorrect email verification code entered for email: {}", verifyRequest.getEmail());
+            throw new ForbiddenException("Invalid verification code");
         }
 
         user.setEnabled(true);
         userRepository.save(user);
+        log.info("Email verified successfully. Account enabled for email: {}", user.getEmail());
     }
 
-    boolean sendEmail(String sendingEmail, String text) {
+    @Async
+    void sendEmail(String sendingEmail, String text) {
         try {
+            log.debug("Attempting to send verification email to: {}", sendingEmail);
+
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom("noreply@clickup.com");
+            mailMessage.setFrom(email);
             mailMessage.setTo(sendingEmail);
-            mailMessage.setSubject("Workspace invitation");
+            mailMessage.setSubject("Email Verification - ClickUp App");
             mailMessage.setText(text);
             javaMailSender.send(mailMessage);
-            return true;
+
+            log.info("Verification email sent successfully to: {}", sendingEmail);
         } catch (Exception e) {
-            return false;
+            log.error("Failed to send verification email to: {}. Error: {}", sendingEmail, e.getMessage(), e);
         }
     }
 }
