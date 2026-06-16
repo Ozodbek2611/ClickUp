@@ -1,0 +1,32 @@
+package uz.pdp.online.clickup.model.spaceDto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SpaceCreateResponseDto {
+
+    private UUID id;
+
+    private String name;
+
+    private String color;
+
+    private String accessType;
+
+    private Long workspaceId;
+
+    private UUID ownerId;
+
+    private UUID avatarId;
+
+    private Timestamp createdAt;
+}
