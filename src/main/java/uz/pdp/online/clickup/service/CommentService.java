@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.online.clickup.entity.Comment;
 import uz.pdp.online.clickup.entity.Task;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.CommentMapper;
 import uz.pdp.online.clickup.model.commentDto.CommentRequestDto;
@@ -23,6 +24,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final TaskRepository taskRepository;
+    private final TaskHistoryService taskHistoryService;
     private final CommentMapper commentMapper;
 
     public CommentResponseDto add(CommentRequestDto dto) {
@@ -36,6 +38,7 @@ public class CommentService {
         comment.setTask(task);
 
         Comment savedComment = commentRepository.save(comment);
+        taskHistoryService.logChange(task, "comment", null, savedComment.getName(), TaskHistoryType.ADD);
         log.info("Comment successfully added. ID: {}, Task ID: {}", savedComment.getId(), dto.getTaskId());
 
         return commentMapper.toResponseDto(savedComment);
@@ -60,6 +63,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Comment not found with ID: " + commentId));
 
+        taskHistoryService.logChange(comment.getTask(), "comment", comment.getName(), null, TaskHistoryType.DELETE);
         commentRepository.delete(comment);
         log.info("Comment successfully deleted. ID: {}", commentId);
     }

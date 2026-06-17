@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.online.clickup.entity.Task;
 import uz.pdp.online.clickup.entity.TimeTracked;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.TimeTrackedMapper;
 import uz.pdp.online.clickup.model.timeTrackedDto.TimeTrackedRequestDto;
@@ -25,6 +26,7 @@ public class TimeTrackedService {
 
     private final TimeTrackedRepository timeTrackedRepository;
     private final TaskRepository taskRepository;
+    private final TaskHistoryService taskHistoryService;
     private final TimeTrackedMapper timeTrackedMapper;
 
     @Transactional
@@ -38,6 +40,7 @@ public class TimeTrackedService {
                 .build();
 
         TimeTracked saved = timeTrackedRepository.save(timeTracked);
+        taskHistoryService.logChange(task, "time_track", null, "Started at: " + saved.getStartedAt(), TaskHistoryType.ADD);
         log.info("Time tracking successfully started with record ID: {} for task ID: {}", saved.getId(), dto.getTaskId());
         return timeTrackedMapper.toResponseDto(saved);
     }
@@ -48,6 +51,10 @@ public class TimeTrackedService {
                 .orElseThrow(() -> new NotFoundException("Time track record not found with ID: " + id));
 
         timeTracked.setStoppedAt(new Timestamp(System.currentTimeMillis()));
+        TimeTracked updated = timeTrackedRepository.save(timeTracked);
+
+        taskHistoryService.logChange(updated.getTask(), "time_track", "Started: " + updated.getStartedAt(),
+                "Stopped: " + updated.getStoppedAt(), TaskHistoryType.UPDATE);
         log.info("Time tracking successfully stopped for record ID: {}", id);
         return timeTrackedMapper.toResponseDto(timeTracked);
     }

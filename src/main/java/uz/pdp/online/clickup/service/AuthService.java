@@ -2,10 +2,6 @@ package uz.pdp.online.clickup.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,10 +27,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
-    private final JavaMailSender javaMailSender;
-
-    @Value("${spring.mail.username}")
-    private String email;
+    private final EmailService emailService;
 
     public AuthResponse register(RegisterRequest registerRequest) {
         log.debug("Registration request started for email: {}", registerRequest.getEmail());
@@ -58,7 +51,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        sendEmail(user.getEmail(), "Your verification code: " + emailCode);
+        emailService.sendVerificationCode(user.getEmail(), emailCode);
 
         log.info("User registered successfully. ID: {}, Email: {}", user.getId(), user.getEmail());
 
@@ -107,23 +100,5 @@ public class AuthService {
         user.setEnabled(true);
         userRepository.save(user);
         log.info("Email verified successfully. Account enabled for email: {}", user.getEmail());
-    }
-
-    @Async
-    void sendEmail(String sendingEmail, String text) {
-        try {
-            log.debug("Attempting to send verification email to: {}", sendingEmail);
-
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom(email);
-            mailMessage.setTo(sendingEmail);
-            mailMessage.setSubject("Email Verification - ClickUp App");
-            mailMessage.setText(text);
-            javaMailSender.send(mailMessage);
-
-            log.info("Verification email sent successfully to: {}", sendingEmail);
-        } catch (Exception e) {
-            log.error("Failed to send verification email to: {}. Error: {}", sendingEmail, e.getMessage(), e);
-        }
     }
 }

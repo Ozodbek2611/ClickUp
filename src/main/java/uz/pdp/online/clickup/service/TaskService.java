@@ -8,6 +8,7 @@ import uz.pdp.online.clickup.entity.Category;
 import uz.pdp.online.clickup.entity.Priority;
 import uz.pdp.online.clickup.entity.Status;
 import uz.pdp.online.clickup.entity.Task;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.TaskMapper;
 import uz.pdp.online.clickup.model.taskDto.TaskRequestDto;
@@ -29,6 +30,7 @@ public class TaskService {
     private final StatusRepository statusRepository;
     private final CategoryRepository categoryRepository;
     private final PriorityRepository priorityRepository;
+    private final TaskHistoryService taskHistoryService;
     private final TaskMapper taskMapper;
 
     public TaskResponseDto create(TaskRequestDto dto) {
@@ -66,6 +68,7 @@ public class TaskService {
         }
 
         Task savedTask = taskRepository.save(task);
+        taskHistoryService.logChange(savedTask, "task", null, savedTask.getName(), TaskHistoryType.NEW);
         log.info("Task successfully created. ID: {}, Name: {}", savedTask.getId(), savedTask.getName());
         return taskMapper.toResponseDto(savedTask);
     }
@@ -79,9 +82,11 @@ public class TaskService {
         Status status = statusRepository.findById(statusId)
                 .orElseThrow(() -> new NotFoundException("Status not found with ID: " + statusId));
 
+        String oldStatus = task.getStatus() != null ? task.getStatus().getName() : "NO_STATUS";
         task.setStatus(status);
         Task updatedTask = taskRepository.save(task);
 
+        taskHistoryService.logChange(updatedTask, "status", oldStatus, status.getName(), TaskHistoryType.UPDATE);
         log.info("Task status successfully updated. Task ID: {}, Status: {}", taskId, status.getName());
         return taskMapper.toResponseDto(updatedTask);
     }

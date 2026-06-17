@@ -30,3 +30,8 @@
 2026-06-16T09:58:20.881+05:00  INFO 16882 --- [ClickUp] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
 2026-06-16T09:58:22.240+05:00  INFO 16882 --- [ClickUp] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
 2026-06-16T09:58:22.248+05:00  INFO 16882 --- [ClickUp] [main] u.pdp.online.clickup.ClickUpApplication  : Started ClickUpApplication in 7.945 seconds (process running for 8.963)
+2026-06-16T11:36:50.068+05:00  INFO 16882 --- [ClickUp] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-06-16T11:36:50.087+05:00  INFO 16882 --- [ClickUp] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-06-16T11:36:50.110+05:00  INFO 16882 --- [ClickUp] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-16T11:36:50.119+05:00  INFO 16882 --- [ClickUp] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-16T11:36:50.128+05:00  INFO 16882 --- [ClickUp] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

@@ -8,6 +8,7 @@ import uz.pdp.online.clickup.entity.Tag;
 import uz.pdp.online.clickup.entity.Task;
 import uz.pdp.online.clickup.entity.TaskTag;
 import uz.pdp.online.clickup.entity.Workspace;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.AlreadyExistsException;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.TagMapper;
@@ -33,6 +34,7 @@ public class TagService {
     private final TaskRepository taskRepository;
     private final TaskTagRepository taskTagRepository;
     private final WorkspaceRepository workspaceRepository;
+    private final TaskHistoryService taskHistoryService;
     private final TagMapper tagMapper;
     private final TaskTagMapper taskTagMapper;
 
@@ -62,9 +64,7 @@ public class TagService {
                 .orElseThrow(() -> new NotFoundException("Tag not found with ID: " + dto.getTagId()));
 
         if (taskTagRepository.findByTaskIdAndTagId(dto.getTaskId(), dto.getTagId()).isPresent()) {
-            throw new AlreadyExistsException(
-                    String.format("Tag [ID: %s] is already assigned to Task [ID: %s]", dto.getTagId(), dto.getTaskId())
-            );
+            throw new AlreadyExistsException("Tag is already assigned to Task" + dto.getTagId());
         }
 
         TaskTag taskTag = new TaskTag();
@@ -72,6 +72,7 @@ public class TagService {
         taskTag.setTag(tag);
 
         TaskTag savedTaskTag = taskTagRepository.save(taskTag);
+        taskHistoryService.logChange(task, "tag", null, tag.getName(), TaskHistoryType.ADD);
         log.info("Tag successfully added to Task. TaskTag ID: {}, Task ID: {}, Tag ID: {}",
                 savedTaskTag.getId(), dto.getTaskId(), dto.getTagId());
 
@@ -82,10 +83,10 @@ public class TagService {
     public void removeFromTask(UUID taskId, UUID tagId) {
         log.debug("Request to remove Tag from Task started. Task ID: {}, Tag ID: {}", taskId, tagId);
 
-        taskTagRepository.findByTaskIdAndTagId(taskId, tagId)
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("Tag [ID: %s] not found on Task [ID: %s]", tagId, taskId)
-                ));
+        TaskTag taskTag = taskTagRepository.findByTaskIdAndTagId(taskId, tagId)
+                .orElseThrow(() -> new NotFoundException("Task not found with ID: " + taskId));
+
+        taskHistoryService.logChange(taskTag.getTask(), "tag", taskTag.getTag().getName(), null, TaskHistoryType.DELETE);
 
         taskTagRepository.deleteByTaskIdAndTagId(taskId, tagId);
         log.info("Tag successfully removed from Task. Task ID: {}, Tag ID: {}", taskId, tagId);

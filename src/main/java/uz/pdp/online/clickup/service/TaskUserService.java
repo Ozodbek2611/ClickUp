@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.online.clickup.entity.Task;
 import uz.pdp.online.clickup.entity.TaskUser;
 import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.AlreadyExistsException;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.TaskUserMapper;
@@ -27,6 +28,7 @@ public class TaskUserService {
     private final TaskUserRepository taskUserRepository;
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final TaskHistoryService taskHistoryService;
     private final TaskUserMapper taskUserMapper;
 
     public TaskUserResponseDto assign(TaskUserRequestDto dto) {
@@ -49,6 +51,7 @@ public class TaskUserService {
         taskUser.setUser(user);
 
         TaskUser saved = taskUserRepository.save(taskUser);
+        taskHistoryService.logChange(task, "assignee", null, user.getEmail(), TaskHistoryType.ADD);
         log.info("User successfully assigned to Task. TaskUser ID: {}, Task ID: {}, User ID: {}",
                 saved.getId(), dto.getTaskId(), dto.getUserId());
 
@@ -59,11 +62,10 @@ public class TaskUserService {
     public void unassign(UUID taskId, UUID userId) {
         log.debug("Request to unassign User from Task started. Task ID: {}, User ID: {}", taskId, userId);
 
-        taskUserRepository.findByTaskIdAndUserId(taskId, userId)
-                .orElseThrow(() -> new NotFoundException(
-                        String.format("User [ID: %s] is not assigned to Task [ID: %s]", userId, taskId)
-                ));
+        TaskUser taskUser = taskUserRepository.findByTaskIdAndUserId(taskId, userId)
+                .orElseThrow(() -> new NotFoundException("User is not assigned to Task" + userId));
 
+        taskHistoryService.logChange(taskUser.getTask(), "assignee", taskUser.getUser().getEmail(), null, TaskHistoryType.DELETE);
         taskUserRepository.deleteByTaskIdAndUserId(taskId, userId);
         log.info("User successfully unassigned from Task. Task ID: {}, User ID: {}", taskId, userId);
     }

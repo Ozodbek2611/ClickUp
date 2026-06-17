@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.online.clickup.entity.Attachment;
 import uz.pdp.online.clickup.entity.Task;
 import uz.pdp.online.clickup.entity.TaskAttachment;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.TaskAttachmentMapper;
 import uz.pdp.online.clickup.model.taskAttachmentDto.TaskAttachmentRequestDto;
@@ -26,6 +27,7 @@ public class TaskAttachmentService {
     private final TaskAttachmentRepository taskAttachmentRepository;
     private final TaskRepository taskRepository;
     private final AttachmentRepository attachmentRepository;
+    private final TaskHistoryService taskHistoryService;
     private final TaskAttachmentMapper taskAttachmentMapper;
 
     public TaskAttachmentResponseDto add(TaskAttachmentRequestDto dto) {
@@ -43,6 +45,7 @@ public class TaskAttachmentService {
         taskAttachment.setAttachment(attachment);
         taskAttachment.setPinCoverImage(dto.getPinCoverImage() != null && dto.getPinCoverImage());
 
+        taskHistoryService.logChange(task, "attachment", null, attachment.getName(), TaskHistoryType.ADD);
         TaskAttachment saved = taskAttachmentRepository.save(taskAttachment);
         log.info("Attachment successfully attached to Task. TaskAttachment ID: {}, Task ID: {}", saved.getId(), dto.getTaskId());
 
@@ -55,6 +58,8 @@ public class TaskAttachmentService {
         TaskAttachment taskAttachment = taskAttachmentRepository.findById(taskAttachmentId)
                 .orElseThrow(() -> new NotFoundException("TaskAttachment not found with ID: " + taskAttachmentId));
 
+        taskHistoryService.logChange(taskAttachment.getTask(), "attachment", taskAttachment.getAttachment().getName(),
+                null, TaskHistoryType.DELETE);
         taskAttachmentRepository.delete(taskAttachment);
         log.info("TaskAttachment successfully removed. ID: {}", taskAttachmentId);
     }

@@ -2,10 +2,6 @@ package uz.pdp.online.clickup.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.online.clickup.entity.*;
@@ -33,11 +29,8 @@ public class WorkspaceService {
     private final WorkspaceRoleRepository workspaceRoleRepository;
     private final WorkspacePermissionRepository workspacePermissionRepository;
     private final UserRepository userRepository;
-    private final JavaMailSender javaMailSender;
     private final WorkspaceMapper workspaceMapper;
-
-    @Value("${spring.mail.username}")
-    private String email;
+    private final EmailService emailService;
 
     @Transactional
     public WorkspaceCreateResponseDto create(WorkspaceCreateRequestDto workspaceCreateRequestDto, User user) {
@@ -161,13 +154,9 @@ public class WorkspaceService {
 
                 workspaceUserRepository.save(new WorkspaceUser(workspace, user, role));
 
-                try {
-                    String inviteLink = "http://localhost:8080/api/workspace/" + workspaceId + "/join";
-                    sendEmail(user.getEmail(), "You have been invited to join the workspace. Click here to join: " + inviteLink);
-                } catch (Exception e) {
-                    log.error("Failed to send invitation email to {}", user.getEmail(), e);
-                    throw new RuntimeException("Failed to send invitation email");
-                }
+                String inviteLink = "http://localhost:8080/api/workspace/" + workspaceId + "/join";
+                emailService.sendWorkspaceInvitation(user.getEmail(), workspace.getName(), inviteLink);
+
                 log.info("Member added successfully. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
             }
             case EDIT -> {
@@ -258,20 +247,6 @@ public class WorkspaceService {
                     .orElseThrow(() -> new NotFoundException("Avatar not found with ID: " + avatarId));
         }
         return null;
-    }
-
-    @Async
-    void sendEmail(String sendingEmail, String text) {
-        try {
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setFrom(email);
-            mailMessage.setTo(sendingEmail);
-            mailMessage.setSubject("Workspace Invitation");
-            mailMessage.setText(text);
-            javaMailSender.send(mailMessage);
-        } catch (Exception e) {
-            log.error("An error occurred while sending email to {}", sendingEmail, e);
-        }
     }
 
     private MemberDto toMemberDto(WorkspaceUser workspaceUser) {

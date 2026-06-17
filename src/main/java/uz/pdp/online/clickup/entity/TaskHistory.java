@@ -1,16 +1,12 @@
 package uz.pdp.online.clickup.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.entity.template.AbsUUIDEntity;
-
-import java.sql.Timestamp;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -20,14 +16,18 @@ import java.sql.Timestamp;
 public class TaskHistory extends AbsUUIDEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id")
+    @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
+    @Column(nullable = false)
     private String changeFieldName;
 
-    private Timestamp before;
+    @Column(columnDefinition = "TEXT")
+    private String beforeValue;
 
-    private Timestamp after;
+    @Column(columnDefinition = "TEXT")
+    private String afterValue;
 
-    private Integer data;
+    @Enumerated(EnumType.STRING)
+    private TaskHistoryType historyType; // NEW, UPDATE, DELETE
 }

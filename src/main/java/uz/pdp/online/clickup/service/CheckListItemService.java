@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uz.pdp.online.clickup.entity.CheckList;
 import uz.pdp.online.clickup.entity.CheckListItem;
 import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.CheckListItemMapper;
 import uz.pdp.online.clickup.model.checkListItemDto.CheckListItemRequestDto;
@@ -24,6 +25,7 @@ public class CheckListItemService {
     private final CheckListItemRepository checkListItemRepository;
     private final CheckListRepository checkListRepository;
     private final UserRepository userRepository;
+    private final TaskHistoryService taskHistoryService;
     private final CheckListItemMapper checkListItemMapper;
 
     public CheckListItemResponseDto addItem(CheckListItemRequestDto dto) {
@@ -43,6 +45,8 @@ public class CheckListItemService {
         }
 
         CheckListItem savedItem = checkListItemRepository.save(item);
+        taskHistoryService.logChange(checkList.getTask(), "checklist_item",
+                null, savedItem.getCheckList().getName(), TaskHistoryType.ADD);
         log.info("CheckListItem successfully added. ID: {}, CheckList ID: {}", savedItem.getId(), dto.getCheckListId());
 
         return checkListItemMapper.toResponseDto(savedItem);
@@ -54,6 +58,8 @@ public class CheckListItemService {
         CheckListItem item = checkListItemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("CheckListItem not found with ID: " + itemId));
 
+        taskHistoryService.logChange(item.getCheckList().getTask(), "checklist_item", item.getCheckList().getName(),
+                null, TaskHistoryType.DELETE);
         checkListItemRepository.delete(item);
         log.info("CheckListItem successfully deleted. ID: {}", itemId);
     }
