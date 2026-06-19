@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.Workspace;
+import uz.pdp.online.clickup.entity.domain.Workspace;
 import uz.pdp.online.clickup.model.workspaceDto.WorkspaceCreateResponseDto;
 import uz.pdp.online.clickup.model.workspaceDto.WorkspaceEditResponseDto;
 import uz.pdp.online.clickup.model.workspaceDto.WorkspaceGetAllResponseDto;

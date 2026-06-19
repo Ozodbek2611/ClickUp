@@ -4,7 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.pdp.online.clickup.entity.*;
+import uz.pdp.online.clickup.entity.domain.Attachment;
+import uz.pdp.online.clickup.entity.domain.User;
+import uz.pdp.online.clickup.entity.domain.Workspace;
+import uz.pdp.online.clickup.entity.domain.WorkspaceRole;
+import uz.pdp.online.clickup.entity.relation.WorkspacePermission;
+import uz.pdp.online.clickup.entity.relation.WorkspaceUser;
 import uz.pdp.online.clickup.entity.enums.TypeOfAction;
 import uz.pdp.online.clickup.entity.enums.WorkspacePermissionName;
 import uz.pdp.online.clickup.entity.enums.WorkspaceRoleName;
@@ -134,7 +139,7 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public void addOrEditOrRemove(Long workspaceId, MemberDto memberDto) {
+    public void addOrEditOrRemove(Long workspaceId, MemberRequestDto memberDto) {
         log.debug("Member management request started. Workspace ID: {}, Action: {}", workspaceId, memberDto.getTypeOfAction());
 
         Workspace workspace = workspaceRepository.findById(workspaceId)
@@ -200,10 +205,10 @@ public class WorkspaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<MemberDto> getMemberAndGuest(Long id) {
+    public List<MemberResponseDto> getMembers(Long id) {
         log.debug("Fetching members and guests for Workspace ID: {}", id);
         return workspaceUserRepository.findAllByWorkspaceId(id).stream()
-                .map(this::toMemberDto)
+                .map(this::toMemberResponseDto)
                 .toList();
     }
 
@@ -249,9 +254,9 @@ public class WorkspaceService {
         return null;
     }
 
-    private MemberDto toMemberDto(WorkspaceUser workspaceUser) {
+    private MemberResponseDto toMemberResponseDto(WorkspaceUser workspaceUser) {
         User user = workspaceUser.getUser();
-        return MemberDto.builder()
+        return MemberResponseDto.builder()
                 .userId(user.getId())
                 .fullName(user.getFullName())
                 .email(user.getEmail())

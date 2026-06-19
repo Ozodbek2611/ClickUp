@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.Category;
+import uz.pdp.online.clickup.entity.domain.Category;
 import uz.pdp.online.clickup.model.categoryDto.CategoryResponseDto;
 
 import java.util.List;

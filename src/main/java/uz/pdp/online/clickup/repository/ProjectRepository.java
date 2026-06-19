@@ -1,7 +1,7 @@
 package uz.pdp.online.clickup.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import uz.pdp.online.clickup.entity.Project;
+import uz.pdp.online.clickup.entity.domain.Project;
 
 import java.util.List;
 import java.util.UUID;

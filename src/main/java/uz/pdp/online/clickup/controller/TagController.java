@@ -1,12 +1,13 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.online.clickup.model.ApiResponse;
+import uz.pdp.online.clickup.common.ApiResponseDto;
 import uz.pdp.online.clickup.model.tagDto.TagRequestDto;
 import uz.pdp.online.clickup.model.tagDto.TagResponseDto;
 import uz.pdp.online.clickup.model.taskTagDto.TaskTagRequestDto;
@@ -20,40 +21,41 @@ import java.util.UUID;
 @RequestMapping("/api/tag")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Tag", description = "Tag APIs")
 public class TagController {
 
     private final TagService tagService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TagResponseDto>> create(@Valid @RequestBody TagRequestDto dto) {
+    public ResponseEntity<ApiResponseDto<TagResponseDto>> create(@Valid @RequestBody TagRequestDto dto) {
         TagResponseDto response = tagService.create(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.ok(response, "Tag created successfully"));
+                .body(ApiResponseDto.ok(response, "Tag created successfully"));
     }
 
     @PostMapping("/add-to-task")
-    public ResponseEntity<ApiResponse<TaskTagResponseDto>> addToTask(@Valid @RequestBody TaskTagRequestDto dto) {
+    public ResponseEntity<ApiResponseDto<TaskTagResponseDto>> addToTask(@Valid @RequestBody TaskTagRequestDto dto) {
         TaskTagResponseDto response = tagService.addToTask(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.ok(response, "Tag added to task successfully"));
+                .body(ApiResponseDto.ok(response, "Tag added to task successfully"));
     }
 
     @DeleteMapping("/task/{taskId}/{tagId}")
-    public ResponseEntity<ApiResponse<Void>> removeFromTask(@PathVariable UUID taskId,
+    public ResponseEntity<ApiResponseDto<Void>> removeFromTask(@PathVariable UUID taskId,
                                                             @PathVariable UUID tagId) {
         tagService.removeFromTask(taskId, tagId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.ok(null, "Tag removed from task successfully"));
+                .body(ApiResponseDto.ok(null, "Tag removed from task successfully"));
     }
 
     @GetMapping("/workspace/{workspaceId}")
-    public ResponseEntity<ApiResponse<List<TagResponseDto>>> getByWorkspace(@PathVariable Long workspaceId) {
+    public ResponseEntity<ApiResponseDto<List<TagResponseDto>>> getByWorkspace(@PathVariable Long workspaceId) {
         List<TagResponseDto> response = tagService.getByWorkspaceId(workspaceId);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.ok(response, "Tags fetched successfully"));
+                .body(ApiResponseDto.ok(response, "Tags fetched successfully"));
     }
 }

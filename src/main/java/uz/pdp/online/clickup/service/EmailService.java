@@ -33,7 +33,6 @@ public class EmailService {
 
             log.info("Email successfully sent to: {}", to);
         } catch (Exception e) {
-            // Email failure should not disrupt the core business logic — log only!
             log.error("Error sending email: to={}, error={}", to, e.getMessage(), e);
         }
     }

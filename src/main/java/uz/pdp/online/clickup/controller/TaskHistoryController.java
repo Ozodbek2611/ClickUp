@@ -1,9 +1,10 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.online.clickup.entity.TaskHistory;
+import uz.pdp.online.clickup.entity.audit.TaskHistory;
 import uz.pdp.online.clickup.service.TaskHistoryService;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/task-history")
 @RequiredArgsConstructor
+@Tag(name = "Task History", description = "Task History API")
 public class TaskHistoryController {
 
     private final TaskHistoryService taskHistoryService;

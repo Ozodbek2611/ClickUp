@@ -1,5 +1,6 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -9,8 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import uz.pdp.online.clickup.entity.Attachment;
-import uz.pdp.online.clickup.model.ApiResponse;
+import uz.pdp.online.clickup.common.ApiResponseDto;
+import uz.pdp.online.clickup.entity.domain.Attachment;
 import uz.pdp.online.clickup.model.attachmentDto.AttachmentResponseDto;
 import uz.pdp.online.clickup.service.AttachmentService;
 
@@ -21,15 +22,16 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/attachment")
 @RequiredArgsConstructor
+@Tag(name = "Attachment", description = "Attachment APIs")
 public class AttachmentController {
 
     private final AttachmentService attachmentService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<AttachmentResponseDto>> upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ApiResponseDto<AttachmentResponseDto>> upload(@RequestParam("file") MultipartFile file) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.ok(attachmentService.upload(file), "File uploaded successfully"));
+                .body(ApiResponseDto.ok(attachmentService.upload(file), "File uploaded successfully"));
     }
 
     @GetMapping("/download/{id}")
@@ -42,7 +44,8 @@ public class AttachmentController {
             if (resource.exists() || resource.isReadable()) {
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(metadata.getContentType()))
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + metadata.getOriginalName() + "\"")
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
+                                + metadata.getOriginalName() + "\"")
                         .body(resource);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -53,10 +56,10 @@ public class AttachmentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         attachmentService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.ok(null, "Attachment deleted successfully"));
+                .body(ApiResponseDto.ok(null, "Attachment deleted successfully"));
     }
 }

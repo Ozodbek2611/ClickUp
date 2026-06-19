@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.SpaceClickApps;
+import uz.pdp.online.clickup.entity.relation.SpaceClickApps;
 import uz.pdp.online.clickup.model.spaceClickAppsDto.SpaceClickAppsResponseDto;
 
 import java.util.List;

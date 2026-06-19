@@ -7,11 +7,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.domain.User;
 import uz.pdp.online.clickup.exceptions.AlreadyExistsException;
 import uz.pdp.online.clickup.exceptions.ForbiddenException;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
-import uz.pdp.online.clickup.model.authDto.AuthResponse;
+import uz.pdp.online.clickup.model.authDto.AuthResponseDto;
 import uz.pdp.online.clickup.model.authDto.LoginRequest;
 import uz.pdp.online.clickup.model.authDto.RegisterRequest;
 import uz.pdp.online.clickup.model.authDto.VerifyRequest;
@@ -29,7 +29,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
 
-    public AuthResponse register(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) {
         log.debug("Registration request started for email: {}", registerRequest.getEmail());
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
@@ -54,12 +54,9 @@ public class AuthService {
         emailService.sendVerificationCode(user.getEmail(), emailCode);
 
         log.info("User registered successfully. ID: {}, Email: {}", user.getId(), user.getEmail());
-
-        String token = jwtProvider.generateToken(user);
-        return new AuthResponse(token);
     }
 
-    public AuthResponse login(LoginRequest loginRequest) {
+    public AuthResponseDto login(LoginRequest loginRequest) {
         log.debug("Authentication request started for email: {}", loginRequest.getEmail());
 
         try {
@@ -71,7 +68,7 @@ public class AuthService {
             );
         } catch (BadCredentialsException e) {
             log.warn("Authentication failed for email: {} - Bad credentials", loginRequest.getEmail());
-            throw new ForbiddenException("Incorrect email or password");
+            throw e;
         }
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
@@ -83,7 +80,7 @@ public class AuthService {
         log.info("User authenticated successfully. Email: {}", user.getEmail());
 
         String token = jwtProvider.generateToken(user);
-        return new AuthResponse(token);
+        return new AuthResponseDto(token);
     }
 
     public void verifyEmail(VerifyRequest verifyRequest) {

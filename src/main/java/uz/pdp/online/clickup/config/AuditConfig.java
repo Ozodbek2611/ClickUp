@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.domain.User;
 
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")

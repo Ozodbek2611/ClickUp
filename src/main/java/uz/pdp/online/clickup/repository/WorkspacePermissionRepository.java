@@ -2,8 +2,8 @@ package uz.pdp.online.clickup.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import uz.pdp.online.clickup.entity.WorkspacePermission;
-import uz.pdp.online.clickup.entity.WorkspaceRole;
+import uz.pdp.online.clickup.entity.relation.WorkspacePermission;
+import uz.pdp.online.clickup.entity.domain.WorkspaceRole;
 import uz.pdp.online.clickup.entity.enums.WorkspacePermissionName;
 
 import java.util.List;

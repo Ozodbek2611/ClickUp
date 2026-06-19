@@ -1,11 +1,12 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.online.clickup.model.ApiResponse;
+import uz.pdp.online.clickup.common.ApiResponseDto;
 import uz.pdp.online.clickup.model.priorityDto.PriorityRequestDto;
 import uz.pdp.online.clickup.model.priorityDto.PriorityResponseDto;
 import uz.pdp.online.clickup.service.PriorityService;
@@ -16,37 +17,38 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/priority")
 @RequiredArgsConstructor
+@Tag(name = "Priority", description = "Priority management APIs")
 public class PriorityController {
 
     private final PriorityService priorityService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PriorityResponseDto>> create(@Valid @RequestBody PriorityRequestDto dto) {
+    public ResponseEntity<ApiResponseDto<PriorityResponseDto>> create(@Valid @RequestBody PriorityRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.ok(priorityService.create(dto), "Priority created successfully"));
+                .body(ApiResponseDto.ok(priorityService.create(dto), "Priority created successfully"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<PriorityResponseDto>> edit(@PathVariable UUID id,
+    public ResponseEntity<ApiResponseDto<PriorityResponseDto>> edit(@PathVariable UUID id,
                                                                  @Valid @RequestBody PriorityRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.ok(priorityService.edit(id, dto), "Priority updated successfully"));
+                .body(ApiResponseDto.ok(priorityService.edit(id, dto), "Priority updated successfully"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         priorityService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.ok(null, "Priority deleted successfully"));
+                .body(ApiResponseDto.ok(null, "Priority deleted successfully"));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PriorityResponseDto>>> getAll() {
+    public ResponseEntity<ApiResponseDto<List<PriorityResponseDto>>> getAll() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ApiResponse.ok(priorityService.getAll(), "Priorities fetched successfully"));
+                .body(ApiResponseDto.ok(priorityService.getAll(), "Priorities fetched successfully"));
     }
 }

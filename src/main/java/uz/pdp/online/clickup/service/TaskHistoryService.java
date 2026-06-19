@@ -3,8 +3,8 @@ package uz.pdp.online.clickup.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.pdp.online.clickup.entity.Task;
-import uz.pdp.online.clickup.entity.TaskHistory;
+import uz.pdp.online.clickup.entity.domain.Task;
+import uz.pdp.online.clickup.entity.audit.TaskHistory;
 import uz.pdp.online.clickup.entity.enums.TaskHistoryType;
 import uz.pdp.online.clickup.repository.TaskHistoryRepository;
 

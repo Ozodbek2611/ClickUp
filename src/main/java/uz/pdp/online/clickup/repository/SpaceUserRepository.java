@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import uz.pdp.online.clickup.entity.SpaceUser;
+import uz.pdp.online.clickup.entity.relation.SpaceUser;
 
 import java.util.UUID;
 

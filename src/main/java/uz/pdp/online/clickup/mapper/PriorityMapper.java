@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.Priority;
+import uz.pdp.online.clickup.entity.domain.Priority;
 import uz.pdp.online.clickup.model.priorityDto.PriorityResponseDto;
 
 import java.util.List;

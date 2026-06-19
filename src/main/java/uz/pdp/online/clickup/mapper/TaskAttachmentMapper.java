@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.TaskAttachment;
+import uz.pdp.online.clickup.entity.relation.TaskAttachment;
 import uz.pdp.online.clickup.model.taskAttachmentDto.TaskAttachmentResponseDto;
 
 import java.util.List;

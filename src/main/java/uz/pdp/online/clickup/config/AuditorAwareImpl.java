@@ -3,7 +3,7 @@ package uz.pdp.online.clickup.config;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.domain.User;
 
 import java.util.Optional;
 

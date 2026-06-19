@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.domain.User;
 import uz.pdp.online.clickup.model.userDto.UserResponseDto;
 
 @Mapper(componentModel = "spring")

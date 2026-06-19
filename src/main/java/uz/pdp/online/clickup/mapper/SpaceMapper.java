@@ -2,8 +2,8 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.Space;
-import uz.pdp.online.clickup.entity.User;
+import uz.pdp.online.clickup.entity.domain.Space;
+import uz.pdp.online.clickup.entity.domain.User;
 import uz.pdp.online.clickup.entity.enums.TypeOfAction;
 import uz.pdp.online.clickup.model.spaceDto.SpaceCreateResponseDto;
 import uz.pdp.online.clickup.model.spaceDto.SpaceEditResponseDto;

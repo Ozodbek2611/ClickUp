@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.Icon;
+import uz.pdp.online.clickup.entity.domain.Icon;
 import uz.pdp.online.clickup.model.iconDto.IconResponseDto;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.Tag;
+import uz.pdp.online.clickup.entity.domain.Tag;
 import uz.pdp.online.clickup.model.tagDto.TagResponseDto;
 
 import java.util.List;

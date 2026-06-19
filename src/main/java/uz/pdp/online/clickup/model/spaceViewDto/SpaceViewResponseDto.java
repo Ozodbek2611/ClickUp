@@ -9,7 +9,7 @@ public class SpaceViewResponseDto {
 
     private UUID id;
 
-    private Long spaceId;
+    private UUID spaceId;
 
     private UUID viewId;
 

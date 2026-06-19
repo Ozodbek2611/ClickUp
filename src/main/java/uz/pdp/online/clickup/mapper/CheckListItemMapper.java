@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.CheckListItem;
+import uz.pdp.online.clickup.entity.domain.CheckListItem;
 import uz.pdp.online.clickup.model.checkListItemDto.CheckListItemResponseDto;
 
 @Mapper(componentModel = "spring")

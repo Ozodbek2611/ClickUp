@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.repository;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
-import uz.pdp.online.clickup.entity.CategoryUser;
+import uz.pdp.online.clickup.entity.relation.CategoryUser;
 
 import java.util.List;
 import java.util.Optional;

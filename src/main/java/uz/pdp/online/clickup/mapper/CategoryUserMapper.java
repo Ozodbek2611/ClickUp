@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.CategoryUser;
+import uz.pdp.online.clickup.entity.relation.CategoryUser;
 import uz.pdp.online.clickup.model.categoryUserDto.CategoryUserResponseDto;
 
 import java.util.List;

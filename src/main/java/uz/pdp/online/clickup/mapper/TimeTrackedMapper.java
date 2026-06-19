@@ -2,7 +2,7 @@ package uz.pdp.online.clickup.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import uz.pdp.online.clickup.entity.TimeTracked;
+import uz.pdp.online.clickup.entity.domain.TimeTracked;
 import uz.pdp.online.clickup.model.timeTrackedDto.TimeTrackedResponseDto;
 
 import java.util.List;

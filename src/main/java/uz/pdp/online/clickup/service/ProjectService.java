@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.pdp.online.clickup.entity.Project;
+import uz.pdp.online.clickup.entity.domain.Project;
 import uz.pdp.online.clickup.exceptions.NotFoundException;
 import uz.pdp.online.clickup.mapper.ProjectMapper;
 import uz.pdp.online.clickup.model.projectDto.ProjectRequestDto;
