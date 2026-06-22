@@ -86,4 +86,6 @@ public class User extends AbsUUIDEntity implements UserDetails {
     public boolean isEnabled() {
         return this.enabled;
     }
+
+
 }

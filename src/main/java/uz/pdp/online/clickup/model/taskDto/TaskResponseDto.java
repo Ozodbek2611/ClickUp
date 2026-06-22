@@ -51,7 +51,7 @@ public class TaskResponseDto {
     @Schema(description = "Specific deadline time")
     private Timestamp dueTimeHas;
 
-    @Schema(description = "Estimated completion time in minutes", example = 120)
+    @Schema(description = "Estimated completion time in minutes", example = "120")
     private Long estimateTime;
 
     @Schema(description = "Date when task was activated")

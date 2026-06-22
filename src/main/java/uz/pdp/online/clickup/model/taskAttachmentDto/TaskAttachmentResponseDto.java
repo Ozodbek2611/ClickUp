@@ -23,7 +23,7 @@ public class TaskAttachmentResponseDto {
     @Schema(description = "ID of the linked attachment", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
     private UUID attachmentId;
 
-    @Schema(description = "Whether this is pinned as cover image", example = false)
+    @Schema(description = "Whether this is pinned as cover image", example = "false")
     private Boolean pinCoverImage;
 
     @Schema(description = "Timestamp when the link was created")

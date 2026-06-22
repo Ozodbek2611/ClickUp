@@ -42,7 +42,7 @@ public class UserResponseDto {
     @Schema(description = "Timestamp of the user's last activity")
     private Timestamp lastActive;
 
-    @Schema(description = "Whether the user account is active", example = true)
+    @Schema(description = "Whether the user account is active", example = "true")
     private boolean enabled;
 
     @Schema(description = "Timestamp when the account was created")

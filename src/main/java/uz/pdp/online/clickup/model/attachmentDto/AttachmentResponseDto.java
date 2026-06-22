@@ -18,7 +18,7 @@ public class AttachmentResponseDto {
     @Schema(description = "Original file name uploaded by user", example = "profile-photo.png")
     private String originalName;
 
-    @Schema(description = "File size in bytes", example = 204800)
+    @Schema(description = "File size in bytes", example = "204800")
     private Long size;
 
     @Schema(description = "MIME type of the file", example = "image/png")

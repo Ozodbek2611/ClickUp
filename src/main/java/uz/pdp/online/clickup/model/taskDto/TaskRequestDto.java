@@ -50,7 +50,7 @@ public class TaskRequestDto {
     @Schema(description = "Specific deadline time")
     private Timestamp dueTimeHas;
 
-    @Schema(description = "Estimated time to complete in minutes", example = 120)
+    @Schema(description = "Estimated time to complete in minutes", example = "120")
     private Long estimateTime;
 
     @Schema(description = "Date when the task was activated")

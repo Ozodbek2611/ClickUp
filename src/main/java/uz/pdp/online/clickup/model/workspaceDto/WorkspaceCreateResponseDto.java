@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Schema(description = "Workspace details returned after creation")
 public class WorkspaceCreateResponseDto {
-    @Schema(description = "Unique identifier of the workspace", example = 1)
+    @Schema(description = "Unique identifier of the workspace", example = "1")
     private Long id;
 
     @Schema(description = "Name of the workspace", example = "My Company")

@@ -23,6 +23,6 @@ public class TagRequestDto {
     private String color;
 
     @NotNull(message = "Workspace ID is required")
-    @Schema(description = "ID of the workspace this tag belongs to", example = 1)
+    @Schema(description = "ID of the workspace this tag belongs to", example = "1")
     private Long workspaceId;
 }

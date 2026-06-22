@@ -27,6 +27,6 @@ public class CheckListItemRequestDto {
     @Schema(description = "ID of the user assigned to this item (optional)", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
     private UUID assignedUserId;
 
-    @Schema(description = "Whether this item is completed", example = false)
+    @Schema(description = "Whether this item is completed", example = "false")
     private Boolean resolved;
 }

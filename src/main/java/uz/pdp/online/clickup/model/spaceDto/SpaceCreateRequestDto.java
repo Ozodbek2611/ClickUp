@@ -24,7 +24,7 @@ public class SpaceCreateRequestDto {
     private UUID avatarId;
 
     @NotNull(message = "Workspace ID is required")
-    @Schema(description = "ID of the parent workspace", example = 1)
+    @Schema(description = "ID of the parent workspace", example = "1")
     private Long workspaceId;
 
     @Schema(description = "Access level: PRIVATE or PUBLIC", example = "PUBLIC")

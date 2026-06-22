@@ -23,7 +23,7 @@ public class CategoryResponseDto {
     @Schema(description = "Access level: PRIVATE or PUBLIC", example = "PUBLIC")
     private String accessType;
 
-    @Schema(description = "Whether the category is archived", example = false)
+    @Schema(description = "Whether the category is archived", example = "false")
     private Boolean archived;
 
     @Schema(description = "ID of the parent project", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")

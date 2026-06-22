@@ -17,7 +17,7 @@ import java.util.UUID;
 @Schema(description = "Updated workspace details")
 public class WorkspaceEditResponseDto {
 
-    @Schema(description = "Unique identifier of the workspace", example = 1)
+    @Schema(description = "Unique identifier of the workspace", example = "1")
     private Long id;
 
     @Schema(description = "Updated workspace name", example = "Updated Company Name")

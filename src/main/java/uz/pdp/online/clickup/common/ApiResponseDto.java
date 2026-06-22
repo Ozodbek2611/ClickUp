@@ -11,13 +11,13 @@ import java.util.List;
 @Schema(description = "Generic wrapper for API response")
 public class ApiResponseDto<T> {
 
-    @Schema(description = "", example = "")
+    @Schema(description = "Indicates whether request was successful", example = "true")
     private boolean success;
 
-    @Schema(description = "A brief report on the result", example = "Email verified successfully")
+    @Schema(description = "A brief report on the result", example = "Registration successful. Please verify your email.")
     private String message;
 
-    @Schema(description = "Main return information")
+    @Schema(description = "")
     private T data;
 
     @Schema(description = "List of errors")

@@ -23,6 +23,6 @@ public class TaskAttachmentRequestDto {
     @Schema(description = "ID of the attachment to link", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
     private UUID attachmentId;
 
-    @Schema(description = "Whether to pin this attachment as the task cover image", example = false)
+    @Schema(description = "Whether to pin this attachment as the task cover image", example = "false")
     private Boolean pinCoverImage = false;
 }

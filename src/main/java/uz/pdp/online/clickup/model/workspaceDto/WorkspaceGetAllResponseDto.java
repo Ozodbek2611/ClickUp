@@ -16,7 +16,7 @@ import java.util.UUID;
 @Schema(description = "Workspace summary for listing")
 public class WorkspaceGetAllResponseDto {
 
-    @Schema(description = "Unique identifier of the workspace", example = 1)
+    @Schema(description = "Unique identifier of the workspace", example = "1")
     private Long id;
 
     @Schema(description = "Name of the workspace", example = "My Company")

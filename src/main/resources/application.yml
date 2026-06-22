@@ -7,27 +7,26 @@ spring:
       ddl-auto: update
     open-in-view: false
   datasource:
-    password: 719
-    url: jdbc:postgresql://localhost:5432/clickup_db
-    username: postgres
+    password: ${DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
   mail:
     host: smtp.yandex.ru
     port: 587
-    username: "ozodbek719@yandex.ru"
-    password: "wqwzusffesnfumap"
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
       mail.smtp.starttls.required: true
 jwt:
-  secret: "pWcRlY1LSo3WJswuiytWClLNOmk9pon1CvtvaiI7-Oc"
-  expiration: 86400000
+  secret: ${JWT_PASSWORD}
+  expiration: ${JWT_EXPIRATION}
 logging:
   file:
     name: logs/click-up.log
   level:
     root: info
-
 springdoc:
   api-docs:
     path: /v3/api-docs

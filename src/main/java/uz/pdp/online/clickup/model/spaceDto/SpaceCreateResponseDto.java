@@ -29,7 +29,7 @@ public class SpaceCreateResponseDto {
     @Schema(description = "Access level: PRIVATE or PUBLIC", example = "PUBLIC")
     private String accessType;
 
-    @Schema(description = "ID of the parent workspace", example = 1)
+    @Schema(description = "ID of the parent workspace", example = "1")
     private Long workspaceId;
 
     @Schema(description = "ID of the space owner", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")

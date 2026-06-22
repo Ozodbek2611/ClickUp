@@ -24,7 +24,7 @@ public class TagResponseDto {
     @Schema(description = "Hex color code of the tag", example = "#E74C3C")
     private String color;
 
-    @Schema(description = "ID of the parent workspace", example = 1)
+    @Schema(description = "ID of the parent workspace", example = "1")
     private Long workspaceId;
 
     @Schema(description = "Timestamp when the tag was created")
