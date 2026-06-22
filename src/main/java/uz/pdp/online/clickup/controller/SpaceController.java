@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +20,17 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/space")
-@Tag(name = "Space", description = "Space APIs")
+@Tag(name = "Space", description = "Space management APIs")
 public class SpaceController {
 
     private final SpaceService spaceService;
 
     @PostMapping
+    @Operation(summary = "Create space", description = "Creates a new space inside a workspace")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Space created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     public ResponseEntity<ApiResponseDto<SpaceCreateResponseDto>> createSpace(
             @RequestBody @Valid SpaceCreateRequestDto dto,
             @CurrentUser User user) {
@@ -32,6 +40,11 @@ public class SpaceController {
     }
 
     @PutMapping("/{spaceId}")
+    @Operation(summary = "Edit space", description = "Updates space name, icon or other settings")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Space updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Space not found")
+    })
     public ResponseEntity<ApiResponseDto<SpaceEditResponseDto>> editSpace(
             @PathVariable UUID spaceId,
             @RequestBody @Valid SpaceEditRequestDto dto,
@@ -40,6 +53,11 @@ public class SpaceController {
     }
 
     @PostMapping("/{spaceId}/members")
+    @Operation(summary = "Add or remove member", description = "Adds or removes a member from a space")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Member updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Space or user not found")
+    })
     public ResponseEntity<ApiResponseDto<SpaceMemberResponseDto>> manageMember(
             @PathVariable UUID spaceId,
             @RequestBody @Valid SpaceMemberRequestDto dto,
@@ -49,6 +67,12 @@ public class SpaceController {
     }
 
     @DeleteMapping("/{spaceId}")
+    @Operation(summary = "Delete space", description = "Permanently deletes a space and all its contents")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Space deleted successfully"),
+            @ApiResponse(responseCode = "403", description = "Not authorized"),
+            @ApiResponse(responseCode = "404", description = "Space not found")
+    })
     public ResponseEntity<Void> deleteSpace(@PathVariable UUID spaceId, @CurrentUser User user) {
         spaceService.deleteSpace(spaceId, user);
         return ResponseEntity.noContent().build();

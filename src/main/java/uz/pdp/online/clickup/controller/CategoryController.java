@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,11 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping
+    @Operation(summary = "Create category", description = "Creates a new category (list) inside a project")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Category created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     public ResponseEntity<ApiResponseDto<CategoryResponseDto>> create(@Valid @RequestBody CategoryRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -31,14 +39,24 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Edit category", description = "Updates category name or other details")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Category updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Category not found")
+    })
     public ResponseEntity<ApiResponseDto<CategoryResponseDto>> edit(@PathVariable UUID id,
-                                                                 @Valid @RequestBody CategoryUpdateDto dto) {
+                                                                    @Valid @RequestBody CategoryUpdateDto dto) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDto.ok(categoryService.edit(id, dto), "Category updated successfully"));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete category", description = "Permanently deletes a category")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Category deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Category not found")
+    })
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         categoryService.delete(id);
         return ResponseEntity
@@ -47,6 +65,11 @@ public class CategoryController {
     }
 
     @GetMapping("/project/{projectId}")
+    @Operation(summary = "Get categories by project", description = "Returns all categories belonging to a specific project")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Categories fetched successfully"),
+            @ApiResponse(responseCode = "404", description = "Project not found")
+    })
     public ResponseEntity<ApiResponseDto<List<CategoryResponseDto>>> getByProjectId(@PathVariable UUID projectId) {
         return ResponseEntity
                 .status(HttpStatus.OK)

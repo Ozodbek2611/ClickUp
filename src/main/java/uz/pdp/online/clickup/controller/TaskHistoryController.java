@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,8 @@ import java.util.UUID;
 public class TaskHistoryController {
 
     private final TaskHistoryService taskHistoryService;
+
+        @Operation(summary = "Get task history", description = "Returns the full change history of a specific task")
 
     @GetMapping("/{taskId}")
     public ResponseEntity<List<TaskHistory>> getHistoryByTask(@PathVariable UUID taskId) {

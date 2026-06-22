@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,12 +25,16 @@ public class SpaceClickAppsController {
 
     private final SpaceClickAppsService spaceClickAppsService;
 
+        @Operation(summary = "Add ClickApp to space", description = "Enables a ClickApp feature for a space")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<SpaceClickAppsResponseDto>> create(@RequestBody @Valid SpaceClickAppsRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponseDto.ok(spaceClickAppsService.create(dto), "ClickApps added to Space"));
     }
+
+        @Operation(summary = "Get space ClickApps", description = "Returns all ClickApps enabled for a space")
 
     @GetMapping("/{spaceId}")
     public ResponseEntity<ApiResponseDto<List<SpaceClickAppsResponseDto>>> getBySpaceId(@PathVariable UUID spaceId) {
@@ -37,6 +44,7 @@ public class SpaceClickAppsController {
     }
 
     @DeleteMapping("/{spaceId}/{clickAppsId}")
+    @Operation(summary = "Remove ClickApp from space", description = "Disables a ClickApp from a space")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID spaceId, @PathVariable UUID clickAppsId) {
         spaceClickAppsService.delete(spaceId, clickAppsId);
         return ResponseEntity

@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,8 @@ public class StatusController {
 
     private final StatusService statusService;
 
+        @Operation(summary = "Create status", description = "Creates a new status for a space")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<StatusResponseDto>> create(@RequestBody StatusRequestDto dto) {
         return ResponseEntity
@@ -29,6 +34,7 @@ public class StatusController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Edit status", description = "Updates an existing status")
     public ResponseEntity<ApiResponseDto<StatusResponseDto>> edit(
             @PathVariable UUID id,
             @RequestBody StatusRequestDto dto) {
@@ -38,12 +44,15 @@ public class StatusController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete status", description = "Permanently deletes a status")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         statusService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDto.ok(null, "Status deleted successfully"));
     }
+
+        @Operation(summary = "Get statuses by space", description = "Returns all statuses for a given space")
 
     @GetMapping("/space/{spaceId}")
     public ResponseEntity<ApiResponseDto<List<StatusResponseDto>>> getBySpace(@PathVariable UUID spaceId) {

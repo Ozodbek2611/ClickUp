@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,8 @@ public class CommentController {
 
     private final CommentService commentService;
 
+        @Operation(summary = "Add comment", description = "Adds a new comment to a task")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<CommentResponseDto>> add(@RequestBody CommentRequestDto dto) {
         return ResponseEntity
@@ -29,6 +34,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
+    @Operation(summary = "Edit comment", description = "Updates the text of an existing comment")
     public ResponseEntity<ApiResponseDto<CommentResponseDto>> edit(@PathVariable UUID commentId,
                                                                 @RequestParam String text) {
         return ResponseEntity
@@ -37,12 +43,15 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
+    @Operation(summary = "Delete comment", description = "Permanently deletes a comment")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID commentId) {
         commentService.delete(commentId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDto.ok(null, "Comment deleted successfully"));
     }
+
+        @Operation(summary = "Get comments by task", description = "Returns all comments for a specific task")
 
     @GetMapping("/task/{taskId}")
     public ResponseEntity<ApiResponseDto<List<CommentResponseDto>>> getByTask(@PathVariable UUID taskId) {

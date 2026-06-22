@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,12 +23,16 @@ public class CheckListItemController {
 
     private final CheckListItemService checkListItemService;
 
+        @Operation(summary = "Add checklist item", description = "Adds a new item to a checklist")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<CheckListItemResponseDto>> addItem(@RequestBody CheckListItemRequestDto dto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponseDto.ok(checkListItemService.addItem(dto), "Item added successfully"));
     }
+
+        @Operation(summary = "Delete checklist item", description = "Permanently deletes a checklist item")
 
     @DeleteMapping("/item/{itemId}")
     public ResponseEntity<ApiResponseDto<Void>> deleteItem(@PathVariable UUID itemId) {
@@ -34,6 +41,8 @@ public class CheckListItemController {
                 .status(HttpStatus.OK)
                 .body(ApiResponseDto.ok(null, "Item deleted successfully"));
     }
+
+        @Operation(summary = "Assign checklist item", description = "Assigns a user to a checklist item")
 
     @PatchMapping("/item/{itemId}/assign/{userId}")
     public ResponseEntity<ApiResponseDto<CheckListItemResponseDto>> assignItem(@PathVariable UUID itemId,

@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,8 @@ public class PriorityController {
 
     private final PriorityService priorityService;
 
+        @Operation(summary = "Create priority", description = "Creates a new priority level")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<PriorityResponseDto>> create(@Valid @RequestBody PriorityRequestDto dto) {
         return ResponseEntity
@@ -30,6 +35,7 @@ public class PriorityController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Edit priority", description = "Updates an existing priority level")
     public ResponseEntity<ApiResponseDto<PriorityResponseDto>> edit(@PathVariable UUID id,
                                                                  @Valid @RequestBody PriorityRequestDto dto) {
         return ResponseEntity
@@ -38,6 +44,7 @@ public class PriorityController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete priority", description = "Permanently deletes a priority level")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         priorityService.delete(id);
         return ResponseEntity
@@ -46,6 +53,7 @@ public class PriorityController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all priorities", description = "Returns all available priority levels")
     public ResponseEntity<ApiResponseDto<List<PriorityResponseDto>>> getAll() {
         return ResponseEntity
                 .status(HttpStatus.OK)

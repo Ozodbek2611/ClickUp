@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -28,11 +31,14 @@ public class AttachmentController {
     private final AttachmentService attachmentService;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload file", description = "Uploads a file and stores it on the server")
     public ResponseEntity<ApiResponseDto<AttachmentResponseDto>> upload(@RequestParam("file") MultipartFile file) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponseDto.ok(attachmentService.upload(file), "File uploaded successfully"));
     }
+
+        @Operation(summary = "Download file", description = "Downloads a previously uploaded file by its ID")
 
     @GetMapping("/download/{id}")
     public ResponseEntity<Resource> download(@PathVariable UUID id) {
@@ -54,6 +60,8 @@ public class AttachmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+        @Operation(summary = "Delete attachment", description = "Permanently deletes an uploaded file")
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {

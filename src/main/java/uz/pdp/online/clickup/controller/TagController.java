@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +30,15 @@ public class TagController {
     private final TagService tagService;
 
     @PostMapping
+    @Operation(summary = "Create tag", description = "Creates a new tag in a workspace")
     public ResponseEntity<ApiResponseDto<TagResponseDto>> create(@Valid @RequestBody TagRequestDto dto) {
         TagResponseDto response = tagService.create(dto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponseDto.ok(response, "Tag created successfully"));
     }
+
+        @Operation(summary = "Add tag to task", description = "Associates an existing tag with a task")
 
     @PostMapping("/add-to-task")
     public ResponseEntity<ApiResponseDto<TaskTagResponseDto>> addToTask(@Valid @RequestBody TaskTagRequestDto dto) {
@@ -42,6 +48,8 @@ public class TagController {
                 .body(ApiResponseDto.ok(response, "Tag added to task successfully"));
     }
 
+        @Operation(summary = "Remove tag from task", description = "Removes a tag association from a task")
+
     @DeleteMapping("/task/{taskId}/{tagId}")
     public ResponseEntity<ApiResponseDto<Void>> removeFromTask(@PathVariable UUID taskId,
                                                             @PathVariable UUID tagId) {
@@ -50,6 +58,8 @@ public class TagController {
                 .status(HttpStatus.OK)
                 .body(ApiResponseDto.ok(null, "Tag removed from task successfully"));
     }
+
+        @Operation(summary = "Get tags by workspace", description = "Returns all tags in a given workspace")
 
     @GetMapping("/workspace/{workspaceId}")
     public ResponseEntity<ApiResponseDto<List<TagResponseDto>>> getByWorkspace(@PathVariable Long workspaceId) {

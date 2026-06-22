@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,8 @@ public class IconController {
 
     private final IconService iconService;
 
+        @Operation(summary = "Create icon", description = "Creates a new icon entry")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<IconResponseDto>> create(@Valid @RequestBody IconRequestDto dto) {
         return ResponseEntity
@@ -30,6 +35,7 @@ public class IconController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Edit icon", description = "Updates an existing icon")
     public ResponseEntity<ApiResponseDto<IconResponseDto>> edit(@PathVariable UUID id,
                                                              @Valid @RequestBody IconRequestDto dto) {
         return ResponseEntity
@@ -38,6 +44,7 @@ public class IconController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete icon", description = "Permanently deletes an icon")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         iconService.delete(id);
         return ResponseEntity
@@ -46,6 +53,7 @@ public class IconController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all icons", description = "Returns all available icons")
     public ResponseEntity<ApiResponseDto<List<IconResponseDto>>> getAll() {
         return ResponseEntity
                 .status(HttpStatus.OK)

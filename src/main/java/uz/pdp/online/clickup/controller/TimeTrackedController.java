@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,8 @@ public class TimeTrackedController {
 
     private final TimeTrackedService timeTrackedService;
 
+        @Operation(summary = "Start time tracking", description = "Starts a time tracking session for a task")
+
     @PostMapping("/start")
     public ResponseEntity<ApiResponseDto<TimeTrackedResponseDto>> startTrack(@Valid @RequestBody TimeTrackedRequestDto dto) {
         return ResponseEntity
@@ -29,12 +34,16 @@ public class TimeTrackedController {
                 .body(ApiResponseDto.ok(timeTrackedService.startTrack(dto), "Time tracking started successfully"));
     }
 
+        @Operation(summary = "Stop time tracking", description = "Stops an ongoing time tracking session")
+
     @PutMapping("/stop/{id}")
     public ResponseEntity<ApiResponseDto<TimeTrackedResponseDto>> stopTrack(@PathVariable UUID id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponseDto.ok(timeTrackedService.stopTrack(id), "Time tracking stopped successfully"));
     }
+
+        @Operation(summary = "Get time tracking history", description = "Returns all time tracking records for a specific task")
 
     @GetMapping("/task/{taskId}")
     public ResponseEntity<ApiResponseDto<List<TimeTrackedResponseDto>>> getByTaskId(@PathVariable UUID taskId) {

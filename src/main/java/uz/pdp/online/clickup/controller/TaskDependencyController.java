@@ -1,5 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +25,8 @@ public class TaskDependencyController {
 
     private final TaskDependencyService taskDependencyService;
 
+        @Operation(summary = "Create task dependency", description = "Creates a dependency relationship between two tasks")
+
     @PostMapping
     public ResponseEntity<ApiResponseDto<TaskDependencyResponseDto>> create(@RequestBody @Valid TaskDependencyRequestDto dto) {
         return ResponseEntity
@@ -30,6 +35,7 @@ public class TaskDependencyController {
     }
 
     @GetMapping("/get-task-dependencies/{taskId}")
+    @Operation(summary = "Get task dependencies", description = "Returns all dependencies for a specific task")
     public ResponseEntity<ApiResponseDto<List<TaskDependencyResponseDto>>> getTaskById(@PathVariable @Valid UUID taskId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -37,6 +43,7 @@ public class TaskDependencyController {
     }
 
     @DeleteMapping("/delete/{taskId}")
+    @Operation(summary = "Delete task dependency", description = "Removes a dependency relationship")
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable @Valid UUID taskId) {
         taskDependencyService.delete(taskId);
         return ResponseEntity
