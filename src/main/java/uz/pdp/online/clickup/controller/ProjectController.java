@@ -1,6 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,9 +30,17 @@ public class ProjectController {
 
     @PostMapping
     @Operation(summary = "Create project", description = "Creates a new project inside a space")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Project created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Project created successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Project created successfully\",\n  \"data\": {\n    \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"name\": \"Backend API\",\n    \"color\": \"#2ECC71\",\n    \"spaceId\": null,\n    \"createdAt\": \"2026-06-23T10:15:30.000+00:00\",\n    \"createdBy\": null\n  },\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "400", description = "Validation Failed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Validation Failed\",\n  \"data\": null,\n  \"errors\": [\"name: Project name cannot be blank\", \"spaceId: Space ID cannot be null\"]\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<ProjectResponseDto>> create(@Valid @RequestBody ProjectRequestDto dto) {
         return ResponseEntity
@@ -40,9 +50,22 @@ public class ProjectController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Edit project", description = "Updates project name or other details")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Project updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Project not found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Project updated successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Project updated successfully\",\n  \"data\": {\n    \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"name\": \"Frontend App\",\n    \"color\": \"#E74C3C\",\n    \"spaceId\": null,\n    \"createdAt\": \"2026-06-23T10:15:30.000+00:00\",\n    \"createdBy\": null\n  },\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "400", description = "Validation Failed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Validation Failed\",\n  \"data\": null,\n  \"errors\": [\"name: Project name cannot be blank\"]\n}")
+                    )),
+            @ApiResponse(responseCode = "404", description = "Project not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Project not found with ID: 3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<ProjectResponseDto>> edit(@PathVariable UUID id,
                                                                    @Valid @RequestBody ProjectUpdateDto dto) {
@@ -53,9 +76,17 @@ public class ProjectController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete project", description = "Permanently deletes a project")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Project deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Project not found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Project deleted successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Project deleted successfully\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "404", description = "Project not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Project not found with ID: 3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         projectService.delete(id);
@@ -66,9 +97,12 @@ public class ProjectController {
 
     @GetMapping("/space/{spaceId}")
     @Operation(summary = "Get projects by space", description = "Returns all projects belonging to a specific space")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Projects fetched successfully"),
-            @ApiResponse(responseCode = "404", description = "Space not found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Projects fetched successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Projects fetched successfully\",\n  \"data\": [\n    {\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"name\": \"Backend API\",\n      \"color\": \"#2ECC71\",\n      \"spaceId\": \"3fa85f64-5717-4562-b3fc-2c963f66afa7\",\n      \"createdAt\": \"2026-06-23T10:15:30.000+00:00\",\n      \"createdBy\": null\n    }\n  ],\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<List<ProjectResponseDto>>> getBySpaceId(@PathVariable UUID spaceId) {
         return ResponseEntity

@@ -1,6 +1,8 @@
 package uz.pdp.online.clickup.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,9 +30,22 @@ public class CategoryController {
 
     @PostMapping
     @Operation(summary = "Create category", description = "Creates a new category (list) inside a project")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Category created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Category created successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Category created successfully\",\n  \"data\": {\n    \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"name\": \"New Category\",\n    \"color\": \"#FF5733\"\n  },\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "400", description = "Validation Failed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Validation Failed\",\n  \"data\": null,\n  \"errors\": [\"name: must not be blank\"]\n}")
+                    )),
+            @ApiResponse(responseCode = "404", description = "Project not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Project not found with ID: 3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<CategoryResponseDto>> create(@Valid @RequestBody CategoryRequestDto dto) {
         return ResponseEntity
@@ -40,9 +55,22 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Edit category", description = "Updates category name or other details")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Category updated successfully"),
-            @ApiResponse(responseCode = "404", description = "Category not found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category updated successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Category updated successfully\",\n  \"data\": {\n    \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n    \"name\": \"Updated Category\",\n    \"color\": \"#FF5733\"\n  },\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "400", description = "Validation Failed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Validation Failed\",\n  \"data\": null,\n  \"errors\": [\"name: must not be blank\"]\n}")
+                    )),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Category not found with ID: 3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<CategoryResponseDto>> edit(@PathVariable UUID id,
                                                                     @Valid @RequestBody CategoryUpdateDto dto) {
@@ -53,9 +81,17 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category", description = "Permanently deletes a category")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Category deleted successfully"),
-            @ApiResponse(responseCode = "404", description = "Category not found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category deleted successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Category deleted successfully\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Category not found with ID: 3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<Void>> delete(@PathVariable UUID id) {
         categoryService.delete(id);
@@ -66,9 +102,12 @@ public class CategoryController {
 
     @GetMapping("/project/{projectId}")
     @Operation(summary = "Get categories by project", description = "Returns all categories belonging to a specific project")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Categories fetched successfully"),
-            @ApiResponse(responseCode = "404", description = "Project not found")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Categories fetched successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Categories fetched successfully\",\n  \"data\": [\n    {\n      \"id\": \"3fa85f64-5717-4562-b3fc-2c963f66afa6\",\n      \"name\": \"Backlog\",\n      \"color\": \"#FF5733\"\n    }\n  ],\n  \"errors\": null\n}")
+                    ))
     })
     public ResponseEntity<ApiResponseDto<List<CategoryResponseDto>>> getByProjectId(@PathVariable UUID projectId) {
         return ResponseEntity
