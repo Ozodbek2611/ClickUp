@@ -12,10 +12,10 @@ import uz.pdp.online.clickup.user.entity.User;
 import uz.pdp.online.clickup.common.exceptions.AlreadyExistsException;
 import uz.pdp.online.clickup.common.exceptions.ForbiddenException;
 import uz.pdp.online.clickup.common.exceptions.NotFoundException;
-import uz.pdp.online.clickup.audit.dto.AuthResponseDto;
-import uz.pdp.online.clickup.audit.dto.LoginRequest;
-import uz.pdp.online.clickup.audit.dto.RegisterRequest;
-import uz.pdp.online.clickup.audit.dto.VerifyRequest;
+import uz.pdp.online.clickup.auth.dto.AuthResponseDto;
+import uz.pdp.online.clickup.auth.dto.LoginRequest;
+import uz.pdp.online.clickup.auth.dto.RegisterRequest;
+import uz.pdp.online.clickup.auth.dto.VerifyRequest;
 import uz.pdp.online.clickup.user.repository.UserRepository;
 import uz.pdp.online.clickup.common.security.JwtProvider;
 

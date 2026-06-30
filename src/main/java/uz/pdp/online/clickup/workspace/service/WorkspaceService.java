@@ -20,13 +20,13 @@ import uz.pdp.online.clickup.common.exceptions.AlreadyExistsException;
 import uz.pdp.online.clickup.common.exceptions.ForbiddenException;
 import uz.pdp.online.clickup.common.exceptions.NotFoundException;
 import uz.pdp.online.clickup.workspace.mapper.WorkspaceMapper;
-import uz.pdp.online.clickup.audit.dto.VerifyRequest;
 import uz.pdp.online.clickup.user.repository.UserRepository;
 import uz.pdp.online.clickup.workspace.repository.WorkspacePermissionRepository;
 import uz.pdp.online.clickup.workspace.repository.WorkspaceRepository;
 import uz.pdp.online.clickup.workspace.repository.WorkspaceRoleRepository;
 import uz.pdp.online.clickup.workspace.repository.WorkspaceUserRepository;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -163,9 +163,9 @@ public class WorkspaceService {
                 WorkspaceRole role = workspaceRoleRepository.findById(memberDto.getRoleId())
                         .orElseThrow(() -> new NotFoundException("Role not found with ID: " + memberDto.getRoleId()));
 
-                workspaceUserRepository.save(new WorkspaceUser(workspace, user, role));
+                WorkspaceUser workspaceUser = workspaceUserRepository.save(new WorkspaceUser(workspace, user, role));
 
-                String inviteLink = "http://localhost:8080/api/workspace/" + workspaceId + "/join";
+                String inviteLink = "http://localhost:8080/api/workspace/" + workspaceId + "/join?token=" + workspaceUser.getInviteToken();
                 emailService.sendWorkspaceInvitation(user.getEmail(), workspace.getName(), inviteLink);
 
                 log.info("Member added successfully. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
@@ -189,25 +189,28 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public void joinToWorkspace(Long workspaceId, User user, VerifyRequest verifyRequest) {
+    public void joinToWorkspace(Long workspaceId, User user, UUID token) {
         log.debug("Join workspace request started. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
 
         WorkspaceUser workspaceUser = workspaceUserRepository.findByWorkspaceIdAndUserId(workspaceId, user.getId())
                 .orElseThrow(() -> new NotFoundException("Invitation not found for this user"));
 
-        if (!user.getEmail().equalsIgnoreCase(verifyRequest.getEmail())) {
-            throw new ForbiddenException("Email verification failed. Emails do not match");
+        if (!workspaceUser.isPending()) {
+            throw new AlreadyExistsException("User has already joined this workspace");
         }
 
-        String emailCode = userRepository.findEmailCodeById(user.getId())
-                .orElseThrow(() -> new NotFoundException("Email verification code not found"));
-
-        if (emailCode.equals(verifyRequest.getEmailCode())) {
-            workspaceUserRepository.save(workspaceUser);
-            log.info("User successfully joined the workspace. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
-        } else {
-            throw new ForbiddenException("Invalid email verification code");
+        if (workspaceUser.getInviteToken() == null || !workspaceUser.getInviteToken().equals(token)) {
+            throw new ForbiddenException("Invalid invitation link");
         }
+
+        if (workspaceUser.isInviteExpired()) {
+            throw new ForbiddenException("Invitation link has expired");
+        }
+
+        workspaceUser.setDateJoined(new Timestamp(System.currentTimeMillis()));
+        workspaceUser.setInviteToken(null);
+        workspaceUserRepository.save(workspaceUser);
+        log.info("User successfully joined the workspace. Workspace ID: {}, User ID: {}", workspaceId, user.getId());
     }
 
     @Transactional(readOnly = true)

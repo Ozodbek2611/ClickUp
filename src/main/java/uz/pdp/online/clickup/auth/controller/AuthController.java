@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.pdp.online.clickup.common.ApiResponseDto;
-import uz.pdp.online.clickup.audit.dto.AuthResponseDto;
-import uz.pdp.online.clickup.audit.dto.LoginRequest;
-import uz.pdp.online.clickup.audit.dto.RegisterRequest;
-import uz.pdp.online.clickup.audit.dto.VerifyRequest;
+import uz.pdp.online.clickup.auth.dto.AuthResponseDto;
+import uz.pdp.online.clickup.auth.dto.LoginRequest;
+import uz.pdp.online.clickup.auth.dto.RegisterRequest;
+import uz.pdp.online.clickup.auth.dto.VerifyRequest;
 import uz.pdp.online.clickup.auth.service.AuthService;
 
 @RestController

@@ -1,4 +1,4 @@
-package uz.pdp.online.clickup.audit.dto;
+package uz.pdp.online.clickup.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

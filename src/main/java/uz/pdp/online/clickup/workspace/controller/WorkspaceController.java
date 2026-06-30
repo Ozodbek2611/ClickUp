@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import uz.pdp.online.clickup.common.annotations.CurrentUser;
 import uz.pdp.online.clickup.common.ApiResponseDto;
 import uz.pdp.online.clickup.user.entity.User;
-import uz.pdp.online.clickup.audit.dto.VerifyRequest;
 import uz.pdp.online.clickup.workspace.dto.*;
 import uz.pdp.online.clickup.workspace.service.WorkspaceService;
 
@@ -172,20 +171,25 @@ public class WorkspaceController {
         return ResponseEntity.ok(ApiResponseDto.ok(null, "Success"));
     }
 
-    @PutMapping("/{id}/join")
-    @Operation(summary = "Join workspace", description = "Join a workspace using an invitation code")
+    @GetMapping("/{id}/join")
+    @Operation(summary = "Join workspace", description = "Accept a workspace invitation using the token from the invite link")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully joined workspace",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n  \"success\": true,\n  \"message\": \"Successfully joined workspace\",\n  \"data\": null,\n  \"errors\": null\n}")
                     )),
-            @ApiResponse(responseCode = "403", description = "Email does not match the invitation, or invalid verification code",
+            @ApiResponse(responseCode = "400", description = "User has already joined this workspace",
                     content = @Content(
                             mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Invalid email verification code\",\n  \"data\": null,\n  \"errors\": null\n}")
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"User has already joined this workspace\",\n  \"data\": null,\n  \"errors\": null\n}")
                     )),
-            @ApiResponse(responseCode = "404", description = "Invitation not found for this user, or email verification code not found",
+            @ApiResponse(responseCode = "403", description = "Invalid or expired invitation token",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Invalid invitation link\",\n  \"data\": null,\n  \"errors\": null\n}")
+                    )),
+            @ApiResponse(responseCode = "404", description = "Invitation not found for this user",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n  \"success\": false,\n  \"message\": \"Invitation not found for this user\",\n  \"data\": null,\n  \"errors\": null\n}")
@@ -194,8 +198,8 @@ public class WorkspaceController {
     public ResponseEntity<ApiResponseDto<Void>> join(
             @PathVariable Long id,
             @CurrentUser User user,
-            @RequestBody VerifyRequest verifyRequest) {
-        workspaceService.joinToWorkspace(id, user, verifyRequest);
+            @RequestParam UUID token) {
+        workspaceService.joinToWorkspace(id, user, token);
         return ResponseEntity.ok(ApiResponseDto.ok(null, "Successfully joined workspace"));
     }
 
