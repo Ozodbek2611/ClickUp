@@ -32,10 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
-### Environment variables
+### Environment variables ###
 .env
 
 ### Logs ###
-/logs
+logs/
 *.log
 *.gz
